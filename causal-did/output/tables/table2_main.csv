@@ -1,0 +1,32 @@
+="Table 2: Effect of Monetary Policy on County Employment"
+
+="",="(1)",="(2)"
+="",="Contemporaneous",="Distributed Lag"
+
+="ΔFFRt × Exposure",="0.0202***",="-0.0054"
+="",="(0.0045)",="(0.0072)"
+
+="ΔFFRt × Exposure (lag 1)",="",="0.0067"
+="",="",="(0.0054)"
+
+="ΔFFRt × Exposure (lag 2)",="",="0.0121"
+="",="",="(0.0090)"
+
+="ΔFFRt × Exposure (lag 3)",="",="0.0247***"
+="",="",="(0.0065)"
+
+="ΔFFRt × Exposure (lag 4)",="",="0.0039"
+="",="",="(0.0139)"
+
+="N",="155757",="132674"
+="Cumulative Effect",="",="    0.042"
+="cum_se",="",="(    0.011)"
+="Mean Dep. Var.",="    9.155",="    9.155"
+="County FE",="Yes",="Yes"
+="Quarter FE",="Yes",="Yes"
+="R-squared",="0.9927",="0.9930"
+
+="Standard errors in parentheses"
+="SE clustered by county. Exposure = CBP 2002 constr+manuf share."
+="Cumulative effect = sum of contemporaneous and four lagged interactions."
+="* p<0.10, ** p<0.05, *** p<0.01"

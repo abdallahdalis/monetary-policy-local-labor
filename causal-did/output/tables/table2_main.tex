@@ -1,0 +1,38 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Effect of Monetary Policy on County Employment}
+\begin{tabular}{l*{2}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+            &\multicolumn{1}{c}{Contemporaneous}&\multicolumn{1}{c}{Distributed Lag}\\
+\midrule
+$\Delta FFR\_t \times \text{Exposure}$&      0.0202\sym{***}&     -0.0054         \\
+            &    (0.0045)         &    (0.0072)         \\
+\addlinespace
+$\Delta FFR\_{t-1} \times \text{Exposure}$&                     &      0.0067         \\
+            &                     &    (0.0054)         \\
+\addlinespace
+$\Delta FFR\_{t-2} \times \text{Exposure}$&                     &      0.0121         \\
+            &                     &    (0.0090)         \\
+\addlinespace
+$\Delta FFR\_{t-3} \times \text{Exposure}$&                     &      0.0247\sym{***}\\
+            &                     &    (0.0065)         \\
+\addlinespace
+$\Delta FFR\_{t-4} \times \text{Exposure}$&                     &      0.0039         \\
+            &                     &    (0.0139)         \\
+\midrule
+\(N\)       &      155757         &      132674         \\
+Cumulative Effect&                     &       0.042         \\
+cum\_se      &                     & (    0.011)         \\
+Mean Dep. Var.&       9.155         &       9.155         \\
+County FE   &         Yes         &         Yes         \\
+Quarter FE  &         Yes         &         Yes         \\
+R-squared   &      0.9927         &      0.9930         \\
+\bottomrule
+\multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{3}{l}{\footnotesize Standard errors clustered by county in parentheses.}\\
+\multicolumn{3}{l}{\footnotesize Exposure = CBP 2002 construction + manufacturing employment share.}\\
+\multicolumn{3}{l}{\footnotesize Cumulative effect = sum of contemporaneous and four lagged interactions.}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+\end{table}

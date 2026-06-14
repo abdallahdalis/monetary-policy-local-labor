@@ -1,0 +1,35 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Pre-Trends / Placebo Test}
+\begin{tabular}{l*{1}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}\\
+            &\multicolumn{1}{c}{Leads Specification}\\
+\midrule
+$\Delta FFR\_t \times \text{Exposure}$&      0.0528\sym{***}\\
+            &    (0.0095)         \\
+\addlinespace
+$\Delta FFR\_{t+1} \times \text{Exposure}$&      0.0132         \\
+            &    (0.0108)         \\
+\addlinespace
+$\Delta FFR\_{t+2} \times \text{Exposure}$&     -0.0070         \\
+            &    (0.0072)         \\
+\addlinespace
+$\Delta FFR\_{t+3} \times \text{Exposure}$&      0.0153\sym{***}\\
+            &    (0.0057)         \\
+\addlinespace
+$\Delta FFR\_{t+4} \times \text{Exposure}$&     -0.0257\sym{***}\\
+            &    (0.0096)         \\
+\midrule
+\(N\)       &      132674         \\
+Mean Dep. Var.&       9.155         \\
+County FE   &         Yes         \\
+Quarter FE  &         Yes         \\
+R-squared   &      0.9938         \\
+\bottomrule
+\multicolumn{2}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{2}{l}{\footnotesize Standard errors clustered by county in parentheses.}\\
+\multicolumn{2}{l}{\footnotesize Lead 1 significant --- consistent with Fed responding to employment conditions.}\\
+\multicolumn{2}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+\end{table}

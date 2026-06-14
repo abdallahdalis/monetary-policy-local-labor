@@ -1,0 +1,29 @@
+="Table 4: Pre-Trends / Placebo Test"
+
+="",="(1)"
+="",="Leads Specification"
+
+="ΔFFRt × Exposure (t)",="0.0528***"
+="",="(0.0095)"
+
+="ΔFFRt × Exposure (lead 1)",="0.0132"
+="",="(0.0108)"
+
+="ΔFFRt × Exposure (lead 2)",="-0.0070"
+="",="(0.0072)"
+
+="ΔFFRt × Exposure (lead 3)",="0.0153***"
+="",="(0.0057)"
+
+="ΔFFRt × Exposure (lead 4)",="-0.0257***"
+="",="(0.0096)"
+
+="N",="132674"
+="Mean Dep. Var.",="    9.155"
+="County FE",="Yes"
+="Quarter FE",="Yes"
+="R-squared",="0.9938"
+
+="Standard errors in parentheses"
+="SE clustered by county. Lead 1 significant — Fed reacts to employment (see text)."
+="* p<0.10, ** p<0.05, *** p<0.01"
