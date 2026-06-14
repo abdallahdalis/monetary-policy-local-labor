@@ -3,6 +3,8 @@
 **State-versus-County Aggregation and Identification in U.S. Monetary Policy
 Transmission to Employment, 2002–2019**
 
+📄 **Read the papers:** [time-series report](report.pdf) · [causal DiD paper](causal-did/paper.pdf)
+
 A two-part research program on how monetary policy transmits to local employment,
 by Abdallah Dalis (DePaul University):
 
