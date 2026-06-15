@@ -1,0 +1,70 @@
+% =============================================================================
+%  dalis-econ-style.sty
+%  Reusable journal-style formatting for Abdallah Dalis's empirical economics
+%  papers. Palatino body, running header, refined section heads, a shaded
+%  plain-language summary box, and standard econ paper packages.
+%
+%  USE:  \usepackage{dalis-econ-style}  (keep this .sty next to your .tex,
+%        or install it on your TeX path).
+%  Then set the running header with \runningtitle{Short Title} in the preamble.
+%
+%  SCOPE: empirical research papers and reports. NOT for problem sets, proofs,
+%  or slides (Beamer has its own template).
+% =============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{dalis-econ-style}[2026/06/15 Dalis empirical econ paper style]
+
+% --- Page + fonts ---
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[margin=1.1in]{geometry}
+\RequirePackage{mathpazo}                 % Palatino text + matching math
+\RequirePackage{amsmath, amssymb, amsthm}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{caption}
+\RequirePackage{microtype}
+\RequirePackage{setspace}
+\RequirePackage{enumitem}
+\RequirePackage[authoryear,round]{natbib}
+\RequirePackage{titlesec}
+\RequirePackage{titling}
+\RequirePackage{fancyhdr}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue}
+
+% --- Spacing ---
+\linespread{1.05}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+
+% --- Captions ---
+\captionsetup[table]{labelfont=bf, font=small, skip=4pt}
+\captionsetup[figure]{labelfont=bf, font=small, skip=4pt}
+
+% --- Section headings (small-caps section, bold subsection) ---
+\titleformat{\section}{\large\bfseries\scshape}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.3em}{0.5em}
+\titlespacing*{\subsection}{0pt}{0.9em}{0.3em}
+
+% --- Running header. Set \runningtitle{...} in the preamble. ---
+\newcommand{\runningtitle}[1]{\gdef\@runningtitle{#1}}
+\gdef\@runningtitle{}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\scshape \@runningtitle}
+\fancyhead[R]{\small\thepage}
+\fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\small\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% --- Plain-language summary box ---
+\newtcolorbox{summarybox}{
+  colback=gray!5, colframe=gray!55, boxrule=0.5pt, arc=2pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  fonttitle=\bfseries, title=Plain-Language Summary}
+
+% =============================================================================
+% END dalis-econ-style.sty
+% =============================================================================
