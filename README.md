@@ -3,22 +3,30 @@
 **State-versus-County Aggregation and Identification in U.S. Monetary Policy
 Transmission to Employment, 2002–2019**
 
-📄 **Read the papers:** [time-series report](report.pdf) · [causal DiD paper](causal-did/paper.pdf)
+📄 **Read the papers:**
+[Part 1 on SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7000419) ·
+[causal DiD paper](causal-did/paper.pdf) ·
+[time-series report](report.pdf) ·
+[racial incidence (Part 3)](part3/)
 
-A two-part research program on how monetary policy transmits to local employment,
+A three-part research program on how monetary policy transmits to local employment,
 by Abdallah Dalis (DePaul University):
 
-- **`causal-did/`** — a shift-share **difference-in-differences** (ECO 510, Causal
-  Inference): do counties with higher predetermined shares of rate-sensitive
-  industries respond differently when the Fed moves the funds rate? Two-way fixed
-  effects, distributed lags, pre-trend/placebo tests. *Submitted for the NABE
-  Mennis Award.*
-- **time-series** (root, ECO 508, Time Series): reduced-form **VAR**, recursive
+- **`causal-did/` (Part 1)** — a shift-share **difference-in-differences**: do
+  counties with higher predetermined shares of rate-sensitive industries respond
+  differently when the Fed moves the funds rate? Two-way fixed effects,
+  distributed lags, pre-trend/placebo tests. *Published as an
+  [SSRN working paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7000419);
+  selected to advance for the NABE Mennis Award.*
+- **time-series (Part 2, root)** — reduced-form **VAR**, recursive
   **SVAR**, Jordà **local projections** with Bauer–Swanson high-frequency
   surprises, and a **random-forest** benchmark.
+- **`part3/` (Part 3, in progress)** — *Between Metros, Not Within*: the racial
+  incidence of identified monetary contractions on local employment.
 
 Together they tackle the same question from the **causal** and the **time-series**
-sides, and across **state-versus-county aggregation**.
+sides, across **state-versus-county aggregation**, and finally as
+**distributional incidence**.
 
 The R script below reproduces the time-series half end to end: it downloads the
 FRED series and Bauer–Swanson surprises, reads the bundled BLS QCEW / Census CBP
