@@ -1,0 +1,172 @@
+% =============================================================================
+%  Spurious Precision: Why Shift-Share Designs Overstate Monetary Policy
+%                      Effects on Local Employment
+%  MAIN DOCUMENT — assembled August 12, 2026
+%  Author: Abdallah Dalis, DePaul University
+%
+%  BUILD:  pdflatex -> bibtex -> pdflatex -> pdflatex
+%
+%  This file exists to hold three things the section files deliberately do not:
+%  the preamble, the float blocks, and the bibliography. The four sections in
+%  sections/ are written to be \input here and contain no floats of their own,
+%  which is why eight \ref targets dangled until this file was written.
+%
+%  ---------------------------------------------------------------------------
+%  ⚠️ FIGURE NUMBERING TRAP. The filenames do not match the figure numbers, and
+%  they never will, because the files are named for what the script that wrote
+%  them called them:
+%
+%     manuscript Figure 5  ->  figures/fig4_raw_vs_identified.png
+%     manuscript Figure 6  ->  figures/fig5_precision_collapse.png
+%
+%  Check the mapping before editing any float below. Getting it wrong swaps the
+%  point-estimate panel with the standard-error panel, and both are plausible
+%  under either caption, so the error would not look like an error.
+%  ---------------------------------------------------------------------------
+%
+%  PROVENANCE OF EVERY FLOAT, so no caption asserts a number it did not read:
+%    Fig 1  causal-did/output/figures/exposure_map_2002_rebuilt.pdf
+%           Dalis_Abdallah_ExposureMap.R. usmap 0.6.1 + usmapdata 0.2.0.
+%    Fig 2  figures/fig2_shock_comparison.png      Dalis_Abdallah_ShockComparison_Figure.R
+%    Fig 3  causal-did/output/figures/fig3_pretrends.png   Dalis_Abdallah_PreTrendsFigure.R
+%    Fig 4  causal-did/output/figures/fig_randomization_inference_zlb-full.png
+%           Dalis_Abdallah_RandomizationInference.R, 2,000 draws, seed 20260811
+%    Fig 5  figures/fig4_raw_vs_identified.png     Dalis_Abdallah_SpuriousPrecision_Figures.R
+%    Fig 6  figures/fig5_precision_collapse.png    same script
+%    Tab 2  tables/tab2_main_both_windows.tex      Dalis_Abdallah_MakeTables.R
+%    Tab 4  tables/tab4_placebo_both_windows.tex   same script
+%
+%  ⚠️ THE PAPER RECORD CALLS THESE "Table 2" and "Table 4". They render as
+%  Table 1 and Table 2, because this document contains exactly two tables. That
+%  is not a defect: every reference in the sections is \ref-driven, so the
+%  rendered text and the rendered floats agree. The 2-and-4 names survive only
+%  in comments and in the handoff, where they refer to the causal-did output
+%  filenames (table2_main_R.tex, table4_placebo_R.tex). Do not "fix" the
+%  numbering by hard-coding it.
+% =============================================================================
+
+\documentclass[11pt]{article}
+\usepackage{dalis-econ-style}
+\runningtitle{Spurious Precision}
+
+\graphicspath{{figures/}{causal-did/output/figures/}}
+
+\title{\bfseries Spurious Precision:\\[2pt]
+\large Why Shift-Share Designs Overstate Monetary Policy\\ Effects on Local Employment}
+\author{Abdallah Dalis\thanks{DePaul University. Email:
+\texttt{dalisabdallah@gmail.com}. Replication code:
+\texttt{causal-did/Dalis\_Abdallah\_RebuildExposure.R} and the scripts it feeds.
+I thank Prof.\ Jin Man Lee for advising this research program. All errors are my
+own.}}
+\date{Working paper \textperiodcentered\ \today}
+
+\begin{document}
+\maketitle
+\thispagestyle{plain}
+
+\input{sections/introduction}
+
+\section{Data and Method}
+\input{sections/methods}
+
+\input{sections/results_discussion}
+
+\input{sections/conclusion}
+
+% =============================================================================
+%  FLOATS
+%  Kept together at the end and allowed to migrate, rather than pinned inside
+%  the sections. The sections were written figure-by-figure and each one names
+%  its float in prose, so a reader is never asked to hunt.
+% =============================================================================
+\clearpage
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{exposure_map_2002_rebuilt.pdf}
+\caption{Exposure is regional, not idiosyncratic. Share of county employment in
+construction and manufacturing, 2002, from County Business Patterns and held
+fixed thereafter. 3{,}127 counties. Median $0.206$; tenth to ninetieth
+percentile $0.043$ to $0.417$. Drawn on 2020 county boundaries: seven counties
+whose FIPS codes were retired after 2002 have no polygon and are left blank.}
+\label{fig:exposure}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig2_shock_comparison.png}
+\caption{Two measures of monetary policy that share almost nothing. The realized
+quarterly change in the federal funds rate against the orthogonalized
+Bauer--Swanson high-frequency surprise, summed to quarters. Both series enter
+the same design in the sections that follow; nothing else about the
+specification changes between them.}
+\label{fig:shocks}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig3_pretrends.png}
+\caption{Pre-period leads of the exposure interaction, with 95 percent
+confidence intervals, standard errors clustered by county. Leads are added to
+the main specification; a design satisfying parallel trends would place all four
+at zero. Estimates are shown for the full 2002 to 2019 panel and for the sample
+excluding 2009 to 2012. Under clustered inference leads one, two and three
+reject zero at five percent, and the two windows agree to within $0.0015$ on
+every lead. The parallel-trends assumption fails regardless of the window, so
+the difference-in-differences estimate cannot be read causally.}
+\label{fig:pretrends}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig_randomization_inference_zlb-full.png}
+\caption{Randomization inference on the pre-period leads. Exposure is permuted
+across counties two thousand times and the model re-estimated on each draw; the
+spread of the placebo estimates is the null distribution. The permutation spread
+runs $1.11$ times the clustered standard error for the contemporaneous term and
+$1.62$, $1.41$, $1.18$ and $0.76$ for the four leads, so the clustered errors are
+too small for the first three leads. Leads two and three reject under
+permutation, at $p=0.025$ and $p<0.0005$. Lead one is reported as unsettled:
+$p=0.054$ against a Monte Carlo standard error of $0.005$.}
+\label{fig:ri}
+\end{figure}
+
+% ⚠️ Figure 5 is fig4_raw_vs_identified.png. See the trap note at the top.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig4_raw_vs_identified.png}
+\caption{The same design, two shock measures. Local projections of the exposure
+interaction across horizons zero to twelve, both sample windows. The raw
+estimator uses the quarterly change in the federal funds rate; the identified
+estimator substitutes Bauer--Swanson high-frequency surprises, holding the
+design fixed. Raw estimates are positive at all thirteen horizons and
+significant at eight; identified estimates are negative at all thirteen and
+significant at none. The two estimators are not statistically distinguishable at
+any horizon, the closest being $p=0.071$ at $h=2$, so the figure does not
+establish a change in sign. It establishes a collapse in precision.}
+\label{fig:lp}
+\end{figure}
+
+% ⚠️ Figure 6 is fig5_precision_collapse.png. See the trap note at the top.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig5_precision_collapse.png}
+\caption{Precision, not sign, is what changes. Standard errors of the local
+projection estimates by horizon, both sample windows. Colour distinguishes the
+shock measure; line type distinguishes the window. Identified standard errors
+run $5.3$ to $10.0$ times wider than raw ones over 2002--2019, and $5.8$ to
+$11.7$ times wider excluding 2009--2012. The gap holds at every horizon in both
+windows. Point estimates are in Figure~\ref{fig:lp}.}
+\label{fig:precision}
+\end{figure}
+
+\clearpage
+\input{tables/tab2_main_both_windows}
+\input{tables/tab4_placebo_both_windows}
+
+% =============================================================================
+\clearpage
+\bibliographystyle{aer}
+\bibliography{references}
+
+\end{document}

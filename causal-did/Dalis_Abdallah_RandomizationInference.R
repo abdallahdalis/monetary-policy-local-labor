@@ -279,6 +279,17 @@ res <- bind_rows(lapply(seq_len(nrow(grid)), function(g) {
     ratio        = round(apply(nd, 2, sd, na.rm = TRUE) / tr$se, 2),
     p_ri         = round(sapply(seq_along(TERMS), function(j)
       mean(abs(nd[, j]) >= abs(tr$b[j]), na.rm = TRUE)), 4),
+    #  Added August 12, 2026. A permutation p-value cannot be read without
+    #  knowing how many draws produced it: at 200 draws p is quantised to 0.005
+    #  and carries a Monte Carlo standard error of about 0.015 near 0.05, which
+    #  is wider than the gap between the leads this paper counts and the ones it
+    #  does not. The file used to omit the one number that makes its own p
+    #  column interpretable. It no longer does.
+    n_reps       = N_REPS,
+    mcse_p       = round(sqrt(sapply(seq_along(TERMS), function(j)
+      mean(abs(nd[, j]) >= abs(tr$b[j]), na.rm = TRUE)) *
+      (1 - sapply(seq_along(TERMS), function(j)
+        mean(abs(nd[, j]) >= abs(tr$b[j]), na.rm = TRUE))) / N_REPS), 4),
     row.names = NULL)
 }))
 
@@ -292,7 +303,23 @@ cat("\n",
     "ratio  = sd(null) / analytic SE.\n",
     "  ~1     analytic SEs are honest UNDER THAT SCHEME'S null.\n",
     "  >1     analytic SEs are too small by that factor.\n",
-    "p_ri   = share of permutations with |b| at least the true |b|.\n")
+    "p_ri   = share of permutations with |b| at least the true |b|.\n",
+    "n_reps = permutations drawn. mcse_p = Monte Carlo standard error of p_ri.\n",
+    "         A lead is counted as rejecting only if p_ri < 0.05. Where\n",
+    "         p_ri +/- 2*mcse_p straddles 0.05, THE COUNT IS NOT SETTLED and\n",
+    "         N_REPS must be raised before the count is quoted.\n")
+
+#  Say so out loud rather than leaving it to whoever reads the csv.
+straddle <- res[abs(res$p_ri - 0.05) < 2 * res$mcse_p, ]
+if (nrow(straddle) > 0) {
+  cat("\n⚠️ TERMS WHOSE REJECT/NOT-REJECT VERDICT IS INSIDE MONTE CARLO NOISE\n")
+  cat("   at N_REPS =", N_REPS, ". Raise N_REPS before quoting a count.\n")
+  print(straddle[, c("construction", "scheme", "term", "p_ri", "mcse_p")],
+        row.names = FALSE)
+} else {
+  cat(sprintf("\nNo term's verdict sits inside Monte Carlo noise at N_REPS = %d.\n",
+              N_REPS))
+}
 
 # --- THE DECISIVE COMPARISON -------------------------------------------------
 #  Canonical construction only. Does preserving state geography widen the null?

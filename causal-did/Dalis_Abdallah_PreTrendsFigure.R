@@ -277,7 +277,12 @@ if (identical(sig_full, sig_excl)) {
   cat(sprintf(
   "Under clustered inference, leads %s reject zero at 5 percent, and the two windows\n",
     fmt_list(sig_full)))
-  cat("agree to three decimal places. The parallel-trends assumption fails regardless of\n")
+  #  ⚠️ This line asserted "agree to three decimal places." They do not: the
+  #  largest lead gap between windows is about 0.0015, which is agreement to TWO
+  #  decimals. Compute the gap and print it rather than characterising it.
+  gap <- max(abs(f$b[match(e$lead, f$lead)] - e$b), na.rm = TRUE)
+  cat(sprintf("agree to within %.4f on every lead. The parallel-trends assumption fails regardless of\n",
+              gap))
   cat("the window, so the difference-in-differences estimate cannot be read causally.\n")
 } else {
   cat(sprintf(
@@ -308,6 +313,15 @@ if (file.exists(RI_PATH)) {
   ri <- ri[ri$construction == "time" & ri$scheme == "free" &
              grepl("^inter_lead", ri$term), ]
   ri$lead <- as.integer(sub("^inter_lead", "", ri$term))
+  #  Read the draw count off the file rather than hard-coding it. The previous
+  #  version of this line said "0 of 200 draws" as literal text and kept saying
+  #  it after the run was raised to 2,000 -- a caption asserting a number it did
+  #  not read, which is the exact defect this block was written to remove.
+  RI_REPS <- if ("n_reps" %in% names(ri)) as.integer(ri$n_reps[1]) else NA_integer_
+  if (is.na(RI_REPS))
+    stop("randomization_inference_zlb-full.csv has no n_reps column. Re-run ",
+         "Dalis_Abdallah_RandomizationInference.R; a permutation p-value ",
+         "cannot be reported without its draw count.")
   ri <- ri[order(ri$lead), ]
   ri_sig  <- ri$lead[ri$p_ri < 0.05]
   both    <- intersect(sig_full, ri_sig)
@@ -335,7 +349,9 @@ if (file.exists(RI_PATH)) {
   cat(" RI p-values, time construction, free scheme:\n")
   for (i in seq_len(nrow(ri)))
     cat(sprintf("   lead %d : p_ri = %.3f%s\n", ri$lead[i], ri$p_ri[i],
-                if (ri$p_ri[i] == 0) "   (0 of 200 draws; report as p < 0.005)" else ""))
+                if (ri$p_ri[i] == 0)
+                  sprintf("   (0 of %d draws; report as p < %.4f)",
+                          RI_REPS, 1 / (2 * RI_REPS)) else ""))
   cat(sprintf(" The abstract submitted August 11 says TWO of four. That is %s.\n",
               if (length(both) == 2) "still the count" else
                 "NO LONGER THE COUNT -- the abstract sentence has to change"))

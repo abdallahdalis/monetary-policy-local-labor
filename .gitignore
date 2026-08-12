@@ -13,3 +13,13 @@
 causal-did/raw/
 raw/CBP/
 *.zip
+
+# --- LaTeX build artifacts. Added August 12, 2026 during assembly. *.aux, *.log
+# and *.out were already here; the bibtex pair was not, and `git add -A` would
+# have swept them in alongside the first real compile.
+*.bbl
+*.blg
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz

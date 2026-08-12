@@ -37,13 +37,15 @@ retain them. Those observations sit roughly nine log points below the median
 county and are concentrated in very small counties and at county
 boundary-recodes; they are recording artifacts rather than economic zeros.
 
-% [EXPOSURE-DEPENDENT] ⚠️ August 12, 2026. As currently built this paragraph is
-% FALSE: the measure is not the share described, because the numerator sums every
-% NAICS hierarchy level while the denominator sums one. The 2,889 and 2,887
-% counts below are also downstream of a `drop if share > 1` screen that a correct
-% build never triggers. See causal-did/EXPOSURE_DEFECT_2026-08-12.md.
-% The paragraph is left as written because it states the INTENDED measure, which
-% the rebuild will deliver. Re-verify the counts before submission.
+% ✅ CLEARED August 12, 2026. This paragraph was marked FALSE-as-built: the
+% numerator summed every NAICS hierarchy level while the denominator summed one,
+% so the measure was not the share described here. The rebuild delivers the
+% intended measure -- sector-level rows only, shares bounded by one, median 0.206
+% against a national figure near 0.19 -- so the paragraph is now true as written.
+% The 2,889 and 2,887 counts it once carried are gone; see the count block below,
+% which is read off model output rather than derived.
+% Rebuild: causal-did/Dalis_Abdallah_RebuildExposure.R.
+% Diagnosis: causal-did/EXPOSURE_DEFECT_2026-08-12.md.
 Exposure comes from County Business Patterns. It is the share of county
 employment in construction and manufacturing in 2002, the first year of the
 panel. The share is fixed at its 2002 value for every quarter, so it cannot
@@ -141,8 +143,13 @@ stated here so it is not made by accident later.
 
 \subsection{Local projections}
 
+% ⚠️ CITATION ADDED August 12, 2026. The method was used for four sections
+% without being attributed. `jorda2005` was already carried in the key list and
+% was the only entry in references.bib with no \cite anywhere, which is the
+% shape of an omission rather than a decision.
 % SOURCE: monetary_policy_labor.R lines 176-203.
-The second design estimates, at each horizon $h=0,\dots,12$,
+The second design follows the local-projection approach of \citet{jorda2005}. At
+each horizon $h=0,\dots,12$ it estimates
 %
 \begin{equation}
 100 \times \bigl(\ln E_{c,t+h} - \ln E_{c,t-1}\bigr)
@@ -160,7 +167,11 @@ realized funds rate change as $z_t$. The second substitutes the Bauer--Swanson
 surprise. Nothing else changes: same panel, same transformation, same horizons.
 That is the point of the exercise.
 
-% ⚠️ SCALE WARNING. A reader will otherwise try to compare 0.022 against 0.198.
+% ⚠️ SCALE WARNING. A reader will otherwise try to compare the two coefficients
+% directly. On the rebuilt measure the numbers are 0.033 (difference-in-
+% differences) against 0.158 (local projection, h = 0); they were 0.022 and 0.198
+% before the rebuild. The warning is about the scaling, not about those specific
+% values, and holds either way.
 Two features of this design make its coefficients incomparable to
 equation~\eqref{eq:did}, and both are easy to miss. The outcome is scaled by
 100 and cumulated from $t-1$ to $t+h$, and exposure is standardized rather than
