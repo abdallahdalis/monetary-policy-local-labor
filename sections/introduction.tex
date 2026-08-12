@@ -38,7 +38,7 @@ confidence. This paper asks whether that confidence is real.
 interest rate the Fed actually set. But the Fed raises rates when the economy is
 already strong, so that measure carries the economy inside it. Swapping in a
 measure of only the surprise part of policy leaves the estimates far too
-uncertain to say anything. The margin of error grows by roughly six to thirteen
+uncertain to say anything. The margin of error grows by roughly five to twelve
 times, depending on the sample.
 Separately, the method fails its own built-in check for whether the comparison
 was fair to begin with.
@@ -95,10 +95,17 @@ window and again excluding 2009 through 2012.
 
 Three findings follow.
 
+% RE-ESTIMATED August 12, 2026 on the rebuilt exposure measure. 0.033 supersedes
+% 0.022. Source: all_coefficients_R_zlb-full_pos-off.csv, spec main_spec.
+% The qualitative claim was unaffected, as predicted: the coefficient rose by
+% about half, the standard error rose with it, and the t-statistic moved from
+% 5.12 to 5.07.
 First, the naive design looks strong and points the wrong way. The
-contemporaneous interaction is $0.022$ with a $p$-value below $0.001$. Read
+contemporaneous interaction is $0.033$ with a $p$-value below $0.001$. Read
 directly, tightening raises employment where exposure is highest.
 
+% RESOLVED August 12, 2026. Count holds at two of four; the leads changed from
+% {2,4} to {2,3}. This sentence does not name them, so only the count mattered.
 Second, the design fails its own falsification test. Adding leads of the
 interaction, two of the four reject zero under both clustered and randomization
 inference. Employment in exposed counties was already moving before policy
@@ -109,7 +116,7 @@ changed.
 Third, and this is the paper's central result, replacing the realized rate
 change with Bauer--Swanson high-frequency surprises does not relocate the
 estimate. It dissolves it. No horizon rejects zero, in either window, and
-standard errors widen by a factor of six to twelve. The two estimators are not
+standard errors widen by a factor of five to ten. The two estimators are not
 statistically distinguishable at any horizon.
 
 % --- The mechanism, briefly. Detail is in Results. ---------------------------

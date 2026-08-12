@@ -122,7 +122,23 @@ for (k in 1:4) {
 ffr_keep <- ffr %>% filter(year >= 2002) %>%
   select(year, qtr, dffr, starts_with("dffr_lag"), starts_with("dffr_lead"))
 
-cbp02 <- read_dta(file.path(DATA, "cbp_exposure_2002.dta")) %>%
+#  Repointed August 12, 2026 to the REBUILT measure; see
+#  EXPOSURE_DEFECT_2026-08-12.md and Dalis_Abdallah_RebuildExposure.R. The
+#  rebuilt file lives in this project's own data/, not where DATA resolves to,
+#  so it is resolved separately.
+EXPO_CANDIDATES <- c(file.path(DATA, "cbp_exposure_2002_rebuilt.dta"),
+                     "../data/cbp_exposure_2002_rebuilt.dta",
+                     "data/cbp_exposure_2002_rebuilt.dta",
+                     "~/Documents/projects/monetary-policy-local-labor/data/cbp_exposure_2002_rebuilt.dta")
+EXPO <- NA_character_
+for (p in EXPO_CANDIDATES)
+  if (file.exists(path.expand(p))) { EXPO <- path.expand(p); break }
+if (is.na(EXPO)) stop(
+  "Rebuilt exposure file not found. Run Dalis_Abdallah_RebuildExposure.R from ",
+  "the project root first. Looked in: ", paste(EXPO_CANDIDATES, collapse = ", "))
+cat(sprintf("exposure : %s\n", EXPO))
+
+cbp02 <- read_dta(EXPO) %>%
   mutate(area_fips = as.character(area_fips),
          exp_sens  = as.numeric(exp_sens_2002)) %>%
   select(area_fips, exp_sens)

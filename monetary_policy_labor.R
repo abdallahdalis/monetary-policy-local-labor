@@ -75,7 +75,24 @@ qcew <- read_dta(file.path(DATA, "qcew_panel_all_years.dta")) %>%
   mutate(area_fips = sprintf("%05s", area_fips)) %>%
   filter(year >= 2002, year <= 2019, month3_emplvl > 0) %>%
   mutate(yq = year*4 + (qtr - 1))
-expo <- read_dta(file.path(DATA, "cbp_exposure_2002.dta")) %>%
+#  Repointed August 12, 2026 to the REBUILT measure; see
+#  causal-did/EXPOSURE_DEFECT_2026-08-12.md and
+#  causal-did/Dalis_Abdallah_RebuildExposure.R. This script writes
+#  tables/tab_signflip.csv, which other scripts use as a self-check reference,
+#  and it feeds report.tex — so report.pdf must be recompiled after this runs.
+EXPO_CANDIDATES <- c(file.path(DATA, "cbp_exposure_2002_rebuilt.dta"),
+                     "data/cbp_exposure_2002_rebuilt.dta",
+                     "../data/cbp_exposure_2002_rebuilt.dta",
+                     "~/Documents/projects/monetary-policy-local-labor/data/cbp_exposure_2002_rebuilt.dta")
+EXPO <- NA_character_
+for (p in EXPO_CANDIDATES)
+  if (file.exists(path.expand(p))) { EXPO <- path.expand(p); break }
+if (is.na(EXPO)) stop(
+  "Rebuilt exposure file not found. Run causal-did/Dalis_Abdallah_RebuildExposure.R ",
+  "from the project root first. Looked in: ", paste(EXPO_CANDIDATES, collapse = ", "))
+cat(sprintf("exposure : %s\n", EXPO))
+
+expo <- read_dta(EXPO) %>%
   mutate(area_fips = sprintf("%05s", area_fips))
 qcew <- inner_join(qcew, expo, by = "area_fips")
 

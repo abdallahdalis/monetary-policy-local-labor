@@ -68,6 +68,8 @@ Drafted, in `sections/`:
 
 ### The fragility you need to decide how to report
 
+> **⚠️ CORRECTED August 12, 2026. The section below was wrong and is kept only so the correction is legible. Do not act on it.** `is.finite(ln_emp)` is not an alternative screen — it is a no-op. `ln_emp` is coded 0 wherever `month3_emplvl` is 0, so all 232,008 rows pass it. The 32 rows are zero-employment county-quarters sitting nine log points below any real county; at h=0 they double the outcome standard deviation (5.29 → 10.52) and stretch its range from [−108, +181] to [−821, +822]. Eleven small counties, two of them FIPS-recode boundaries (Wade Hampton→Kusilvak AK 2015, Shannon→Oglala Lakota SD 2015). **4.2–9.6 is a contaminated estimate, not a robustness range. Do not report it as a sensitivity.** There is no filter fragility to disclose; there is a data-coding quirk to state once in Methods. Also refuted: these are **not** the 0.9997 exposure outliers — zero overlap. Full detail in `Dalis_Abdallah_LocalProjections_BothWindows.R` header note (2).
+
 **32 rows out of 207,672 move the headline SE ratio by about 30 percent.** Changing the panel filter from `month3_emplvl > 0` to `is.finite(ln_emp)` takes the range from 6.3–12.0 to 4.2–9.6. The published filter is the defensible one, so **no published number is wrong**, but any referee rerunning this with a slightly different employment screen gets a visibly different ratio.
 
 This is the third time the project has demonstrated its own thesis inside its own pipeline. Recommendation: report it deliberately as a strength rather than let it be discovered.

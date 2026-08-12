@@ -5,3 +5,11 @@
 *.log
 *.out
 .DS_Store
+
+# Raw source data — reproducible from the Census, never committed.
+# Cbp02co.txt is 157 MB; GitHub hard-rejects blobs over 100 MB, so committing
+# this would fail the push, not merely bloat the repo. Download URL is recorded
+# in causal-did/EXPOSURE_DEFECT_2026-08-12.md.
+causal-did/raw/
+raw/CBP/
+*.zip

@@ -22,6 +22,8 @@
 #     this file. It is plausible and probably right, which is what makes it
 #     dangerous. If the data disagree, the sentence gets rewritten or cut.
 #
+#  Input : data/cbp_exposure_2002_rebuilt.dta  (repointed August 12, 2026 —
+#          the original build was defective; see EXPOSURE_DEFECT_2026-08-12.md)
 #  Output: output/tables/tab_exposure_descriptives.csv
 #          output/tables/tab_exposure_by_state.csv
 # ==============================================================================
@@ -64,7 +66,25 @@ panel <- read_dta(file.path(DATA, "qcew_panel_all_years.dta")) %>%
          year      = as.integer(year),
          qtr       = as.integer(qtr))
 
-cbp02 <- read_dta(file.path(DATA, "cbp_exposure_2002.dta")) %>%
+#  Repointed August 12, 2026 to the REBUILT exposure measure. The defect in the
+#  original is described in EXPOSURE_DEFECT_2026-08-12.md; the rebuild is
+#  Dalis_Abdallah_RebuildExposure.R. The rebuilt file sits in this project's own
+#  data/, which is NOT the directory DATA resolves to (that is
+#  Research_Monetary_Incidence/data), so it is resolved separately rather than
+#  assumed to sit beside the panel.
+EXPO_CANDIDATES <- c(file.path(DATA, "cbp_exposure_2002_rebuilt.dta"),
+                     "../data/cbp_exposure_2002_rebuilt.dta",
+                     "data/cbp_exposure_2002_rebuilt.dta",
+                     "~/Documents/projects/monetary-policy-local-labor/data/cbp_exposure_2002_rebuilt.dta")
+EXPO <- NA_character_
+for (p in EXPO_CANDIDATES)
+  if (file.exists(path.expand(p))) { EXPO <- path.expand(p); break }
+if (is.na(EXPO)) stop(
+  "Rebuilt exposure file not found. Run Dalis_Abdallah_RebuildExposure.R from ",
+  "the project root first. Looked in: ", paste(EXPO_CANDIDATES, collapse = ", "))
+cat(sprintf("exposure : %s\n", EXPO))
+
+cbp02 <- read_dta(EXPO) %>%
   mutate(area_fips = as.character(area_fips),
          exp_sens  = as.numeric(exp_sens_2002)) %>%
   select(area_fips, exp_sens)

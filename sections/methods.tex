@@ -24,6 +24,26 @@ assembled as a county-by-quarter panel covering 2002 through 2019. The outcome
 is the log of county employment. Observations with non-positive employment are
 dropped.
 
+% ⚠️ ADDED August 12, 2026. This is not housekeeping. The panel stores ln_emp as
+% 0 where employment is 0, so a screen on the log variable passes every row and
+% silently retains 32 county-quarters that double the outcome's standard
+% deviation. Stating the screen is on levels is what stops a replicator, or a
+% future version of this project, from reproducing that error. See the header of
+% Dalis_Abdallah_LocalProjections_BothWindows.R.
+The screen is applied to the employment level rather than to its logarithm. The
+panel records log employment as zero in the small number of county-quarters
+where employment itself is zero, so a finiteness check on the log variable would
+retain them. Those observations sit roughly nine log points below the median
+county and are concentrated in very small counties and at county
+boundary-recodes; they are recording artifacts rather than economic zeros.
+
+% [EXPOSURE-DEPENDENT] ⚠️ August 12, 2026. As currently built this paragraph is
+% FALSE: the measure is not the share described, because the numerator sums every
+% NAICS hierarchy level while the denominator sums one. The 2,889 and 2,887
+% counts below are also downstream of a `drop if share > 1` screen that a correct
+% build never triggers. See causal-did/EXPOSURE_DEFECT_2026-08-12.md.
+% The paragraph is left as written because it states the INTENDED measure, which
+% the rebuild will deliver. Re-verify the counts before submission.
 Exposure comes from County Business Patterns. It is the share of county
 employment in construction and manufacturing in 2002, the first year of the
 panel. The share is fixed at its 2002 value for every quarter, so it cannot
@@ -38,16 +58,35 @@ respond to later policy.
 % Row attrition: 207,672 joined county-quarters, 196,148 estimated. The 11,524
 % difference is the four leads times 2,887 counties, which is 11,548. Close
 % enough to be the lead construction and nothing else.
+% UPDATED August 12, 2026 for the rebuilt exposure measure. The old figures
+% (CBP 2,889 / joined 2,887 / 207,672 / 161,528) were downstream of the defective
+% build and of its `drop if share > 1` screen, which deleted 282 counties.
+% ✅ FINAL, same day. All counts below are read off the re-run model output, not
+% derived by arithmetic here:
+%   /tmp -> causal-did/output/tables/run_zlb-full_pos-off.log and run_zlb-excl_pos-off.log
+%   joined            224,952 full / 174,968 excl
+%   main specification 224,952 full / 174,968 excl   (no leads, so no attrition)
+%   lead specification 212,468 full / 162,484 excl
+% The lead attrition is 12,484 rows in the full window, which is four leads times
+% 3,121 of the 3,127 counties. It is the lead construction and nothing else.
 The Quarterly Census of Employment and Wages panel covers 3{,}228 counties. The
-County Business Patterns exposure file covers 2{,}889. Joining them leaves
-\textbf{2{,}887 counties} over 72 quarters, and that is the estimation sample
-in both windows.
+County Business Patterns exposure file covers 3{,}127. Joining them, and
+requiring an observed funds-rate change, leaves \textbf{3{,}127 counties} over
+72 quarters, and that is the estimation sample in both windows.
 
-Attrition beyond that is mechanical. The joined panel has 207{,}672
-county-quarter observations in the full window and 161{,}528 excluding 2009
-through 2012. The estimated specifications use 196{,}148 and 150{,}004
-respectively, the difference being rows whose four leads are not observed.
-Counts reported in the paper are estimation samples unless stated otherwise.
+The 2002 County Business Patterns county file records the District of Columbia
+as a statewide entry rather than a county, and it is the only jurisdiction it
+treats that way. It is recoded here to its standard county FIPS and retained;
+the alternative, dropping every statewide entry, would silently exclude a real
+jurisdiction along with the fifty genuine residual records. The District has the
+lowest exposure in the country at $0.020$.
+
+Attrition beyond that is mechanical. The joined panel has 224{,}952
+county-quarter observations in the full window and 174{,}968 excluding 2009
+through 2012. The main specification uses all of them. The specification that
+adds four pre-period leads uses 212{,}468 and 162{,}484 respectively, the
+difference being rows whose leads are not observed. Counts reported in the paper
+are estimation samples unless stated otherwise.
 
 Macroeconomic series come from FRED: the effective federal funds rate, total
 nonfarm payrolls, and the consumer price index. The funds rate is averaged

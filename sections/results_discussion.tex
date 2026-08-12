@@ -16,6 +16,29 @@
 %    causal-did/output/tables/randomization_inference_zlb-full.csv
 % =============================================================================
 
+% =============================================================================
+% ⚠️⚠️  DO NOT COMPILE TO A SUBMITTED PDF. READ THIS FIRST.  ⚠️⚠️
+%
+% August 12, 2026. The CBP exposure measure is MIS-CONSTRUCTED. 01_clean_data.do
+% summed every level of the NAICS hierarchy into the numerator while the
+% denominator used only the total row, so every county's construction-plus-
+% manufacturing share is inflated by a varying factor. Median county share is
+% 0.456 against a national figure near 0.19; San Bernardino County reads 0.9997.
+%
+% Full diagnosis, evidence, and the ordered fix:
+%   causal-did/EXPOSURE_DEFECT_2026-08-12.md
+% Rebuild script (needs a Census download that is not in the repo):
+%   causal-did/Dalis_Abdallah_RebuildExposure.R
+%
+% PROVISIONAL, pending rebuild — every number marked [EXPOSURE-DEPENDENT] below:
+%   - all of section 5.1
+%   - Table 2 coefficient 0.0223 and its standard error
+%   - the pre-trends lead magnitudes
+%   - the fifth limitation (+0.54 size correlation)
+% The SE-RATIO claim in 5.6 is expected to survive, because both arms hold
+% exposure fixed, but that is an argument and not yet a test.
+% =============================================================================
+
 \section{Results}
 
 % -----------------------------------------------------------------------------
@@ -28,47 +51,111 @@
 % on 2026-08-11. The median 0.4555 cross-checks against the independent
 % median-split value 0.455516 in PIPELINE_RECONCILIATION.md section 2, H2.
 %
-% ⚠️ The geography sentence below was REWRITTEN August 11. The first draft said
-% exposure concentrates in the industrial Midwest and interior South and thins
-% in coastal metros. That was written from general knowledge, not from the
-% exposure file, and the file disagrees: four of the ten highest-exposure states
-% are in New England. Do not restore the earlier wording.
+% ⚠️⚠️ THE AUGUST 11 REWRITE OF THIS SENTENCE IS ITSELF RETRACTED, August 12.
+%
+% The history, because it is instructive. The first draft said exposure
+% concentrates in the industrial Midwest and interior South and thins in coastal
+% metros. On August 11 that was overturned in favour of a New England story, on
+% the grounds that the file disagreed with it. The file did disagree. The file
+% was wrong: it was built on the defective exposure measure, and the New England
+% result was an artifact of the NAICS over-count.
+%
+% Rebuilt, New England ranks 14th to 31st of 51 states. Not one New England state
+% is in the top ten. The FIRST HALF of the original sentence was right all along.
+%
+% The standing instruction "do not restore the earlier wording" is REVERSED. The
+% Midwest-and-South claim is restored because the corrected data supports it.
+% The coastal clause is NOT restored: California ranks 33rd, Massachusetts 31st,
+% Washington 32nd, New Jersey 37th. Those are below median but nowhere near the
+% bottom, which is the Mountain West and northern Plains.
+%
+% The lesson is not "trust general knowledge over the file." It is that a file
+% only overrules intuition once you have checked how the file was built. Two
+% rewrites of one sentence were spent learning that.
+%
+% SOURCE, all figures below: causal-did/output/tables/tab_exposure_descriptives.csv
+% and tab_exposure_by_state.csv, regenerated August 12 on
+% data/cbp_exposure_2002_rebuilt.dta.
 Figure~\ref{fig:exposure} maps the exposure measure. Exposure is the share of
 county employment in construction and manufacturing in 2002, taken from County
 Business Patterns and held fixed thereafter. The share is predetermined, so it
 cannot respond to later policy.
 
-The spread is wide. Across 2{,}889 counties the mean share is $0.448$ and the
-median $0.456$, with a standard deviation of $0.252$. The tenth percentile is
-$0.078$ and the ninetieth is $0.787$, a ratio of about ten to one. Counties are
-not mildly more or less exposed than one another. They differ by an order of
+% ✅ RESOLVED August 12, 2026 (third pass). Every figure below is now final and
+% comes from causal-did/output/tables/tab_exposure_descriptives.csv and
+% tab_exposure_by_state.csv, regenerated on the SS999-clean rebuilt file.
+%
+% Two things changed from the second-pass note, and one of them was a correction
+% to the correction:
+%
+%   1. The 50 statewide `SS999` residual records are gone. They were never
+%      counties. The joined count was confirmed rather than assumed: QCEW joins
+%      3,127 counties, and the estimation samples in the model output agree.
+%
+%   2. THE DISTRICT OF COLUMBIA IS NOT A RESIDUAL RECORD, and the second-pass
+%      note was wrong to say its 0.020 was "roughly half its true value." In the
+%      2002 CBP county file DC has NO county-detail record at all: 11999 is its
+%      only area, carrying 418,755 employees, which is the whole District. It is
+%      the one state of fifty-one that writes a 999 record and nothing else. A
+%      blanket 999 filter therefore deleted it. 0.0201 IS its value, and it is
+%      the lowest in the country.
+%
+%      DC is recoded to 11001, the FIPS QCEW and every county shapefile use, so
+%      it now enters the estimation sample for the first time. The count is
+%      3,127. Every regression was re-run on it; the headline moved from 0.0333
+%      to 0.0332 and no reported count changed. See methods.tex for the sentence
+%      that states this inclusion.
+%
+%   3. The zero-exposure count is 143, not the 141 the second-pass note
+%      predicted. Predicted and computed are not the same thing.
+The spread is wide. Across 3{,}127 counties the mean share is $0.221$ and the
+median $0.206$, with a standard deviation of $0.139$. The tenth percentile is
+$0.043$ and the ninetieth is $0.416$, a ratio of nearly ten to one. Counties
+are not mildly more or less exposed than one another. They differ by an order of
 magnitude.
 
 The map does the work a summary table cannot, because the variation is
-geographic rather than idiosyncratic. Ranked by mean county exposure, the
-highest states are New Hampshire, Wisconsin, South Carolina, Connecticut and
-Massachusetts, followed by Pennsylvania, Indiana, Ohio, Tennessee and Rhode
-Island. This is the older manufacturing belt, and it reaches into New England
-rather than stopping at the Midwest. The lowest are the Great Plains and the
-Mountain West: Kansas, Oklahoma, New Mexico, Nebraska, Nevada, the Dakotas,
-Montana and Alaska, with the District of Columbia lowest of all at $0.082$.
+geographic rather than idiosyncratic. Ranked by mean county exposure, the highest
+states are Tennessee, South Carolina, Indiana, Alabama and North Carolina,
+followed by Arkansas, Mississippi, Ohio, Wisconsin and Georgia. That is the
+southeastern manufacturing belt together with the eastern industrial Midwest. The
+lowest are the Mountain West and the northern Plains: Montana, North Dakota,
+Nevada, New Mexico, Arizona, South Dakota, Colorado and Nebraska, along with
+Alaska and Hawaii, and the District of Columbia lowest of all at $0.020$. The
+District is a single jurisdiction with essentially no manufacturing, and it sits
+four standard deviations of the state distribution below the exposed South.
 
 That geography matters twice over. It is the source of the cross-sectional
 variation the design exploits, and it is the reason that variation is spatially
 correlated, which Section~\ref{sec:limits} returns to.
 
-% ⚠️ Flagged August 11, not yet investigated. Raised here so it is not lost.
-Two features of the distribution warrant a check before publication. The
-minimum is $0.000$ and the maximum is $0.9997$. A county reporting essentially
-all of its employment in construction and manufacturing is more likely a small
-county whose other industries were suppressed in County Business Patterns than
-a genuine single-industry economy. Whether such counties are influential is
-not established here.
+% ⚠️ REPLACED August 12, 2026. The previous paragraph here flagged a maximum of
+% 0.9997 and guessed it was CBP suppression in small counties. Both halves were
+% wrong: the affected counties were LARGE (San Bernardino, median employment
+% 643,891), and the cause was the construction defect in 01_clean_data.do, not
+% the source data. The rebuilt measure has a maximum of 0.7641 and cannot exceed
+% 1 by construction, so there is no longer any such feature to discuss.
+% See causal-did/EXPOSURE_DEFECT_2026-08-12.md.
+%
+% What remains genuinely open is the OTHER tail, which the old paragraph also
+% mentioned and nobody pursued. SOURCE, recomputed August 12 on the SS999-clean
+% rebuilt file: 143 of 3,127 counties have exposure exactly 0; 154 fall below
+% 0.01. The earlier 186 and 197 were inflated by the residual records.
+One feature of the distribution is worth stating rather than leaving to a reader
+to find. One hundred and forty-three counties, about four and a half percent of the
+sample, record no construction or manufacturing employment at all in 2002. These are
+small counties. County Business Patterns suppresses industry detail where
+publishing it would disclose an individual establishment, so a recorded zero may
+be a true absence or a suppressed positive value, and the two cannot be
+distinguished in the published file. Either way those counties enter the
+estimation at the floor of the exposure distribution. Whether they are
+influential is not established here.
 
 % -----------------------------------------------------------------------------
 % 5.2 — FIGURE 2
 % -----------------------------------------------------------------------------
 \subsection{Two measures of monetary policy that share almost nothing}
+\label{sec:shocks}
 
 % SOURCE: tables/tab_shock_comparison.csv, produced by
 % Dalis_Abdallah_ShockComparison_Figure.R on 2026-08-11. 71 quarters.
@@ -114,38 +201,72 @@ main results use.
 % -----------------------------------------------------------------------------
 \subsection{The naive estimate is precise, and it points the wrong way}
 
+% RE-ESTIMATED August 12, 2026 on data/cbp_exposure_2002_rebuilt.dta.
 % SOURCE: all_coefficients_R_zlb-full_pos-off.csv, spec "main_spec", term "inter"
-% b = 0.0222810, se = 0.00434852, p = 3.19e-07, full 2002-2019.
-% DO NOT substitute the placebo spec's 0.0240 here. Different estimand.
-% See ABSTRACT_2026-08-11.md, "What changed", item 1.
+% b = 0.033280, se = 0.006564, p = 4.21e-07, full 2002-2019.
+% Excluded window, same spec: b = 0.031817, se = 0.006379, p = 6.45e-07.
+% Superseded by this line: 0.0223 (se 0.0043), the defective-measure estimate.
+%
+% ⚠️ THE ROW-PROVENANCE TELL HAS CHANGED. Under the old measure the two specs
+% were separated by their standard errors (0.0043 vs 0.0036) and were nearly
+% identical in point estimate (0.0223 vs 0.0240). That is now REVERSED:
+%   main_spec 0.0333 (se 0.0066)   placebo 0.0252 (se 0.0060)
+% The standard errors are now 0.0005 apart and the coefficients 0.0080 apart, so
+% the COEFFICIENT is the reliable discriminator and the standard error is not.
+% Do not carry the old habit forward. Still take main_spec, never placebo.
+%
+% ⚠️ The untagged all_coefficients_R.csv currently mirrors the FULL-window run,
+% not the excluded one. Quote the tagged files.
 Table~\ref{tab:main} reports the shift-share difference-in-differences estimate.
 Regressing log county employment on the interaction of the quarterly funds rate
 change with 2002 exposure, absorbing county and quarter fixed effects, gives a
-contemporaneous coefficient of $0.0223$ with a standard error of $0.0043$
-clustered by county. The $p$-value is $3\times10^{-7}$.
+contemporaneous coefficient of $0.0333$ with a standard error of $0.0066$
+clustered by county. The $p$-value is $4\times10^{-7}$.
 
 Read directly, counties with more construction and manufacturing employment
 \emph{gain} employment when the Federal Reserve tightens. That contradicts both
 theory and \citet{carlino1998}.
 
-The estimate is also stable. It survives alternative base years for the
-exposure measure and an employment-growth outcome. A reader with only this
-table has a precisely estimated, robust, and wrong-signed result, and no
-obvious reason to distrust it.
+% ⚠️ THE BASE-YEAR ROBUSTNESS CLAIM IS WITHDRAWN, August 12, 2026, and this is
+% not cosmetic. exp_sens_2003, _2013 and _2014 were produced by the SAME
+% build_cbp_exposure program in 01_clean_data.do (lines 236-239) that produced
+% the defective 2002 measure. Only 2002 has been rebuilt. Those three alternative
+% base years are still multiply-counted, so a specification that "survives" them
+% has survived nothing. Either rebuild all four years or drop the claim.
+% The growth-outcome robustness is unaffected and re-estimated:
+% rob_growth inter b = 0.011558, se = 0.002239, p = 2.59e-07.
+The estimate is also stable across the outcome definition: replacing log
+employment with employment growth leaves a coefficient of $0.0116$ with a
+standard error of $0.0022$. A reader with only this table has a precisely
+estimated, robust, and wrong-signed result, and no obvious reason to distrust it.
 
-% NOTE: the distributed-lag specification is a DIFFERENT column. Its
-% contemporaneous term is -0.0071 and insignificant (p = 0.172). The August 7
-% revision memo, line 149, records that the SSRN abstract spliced the two
-% specifications into one sentence. Do not repeat that error here.
+% ⚠️ REWRITTEN August 12, 2026. The distributed-lag column MOVED SUBSTANTIALLY on
+% the rebuilt measure, and the old description is now false in both halves.
+%   OLD: contemporaneous -0.0071, p = 0.172; "lagged terms positive and grow"
+%   NEW (all_coefficients_R_zlb-full_pos-off.csv, spec "dist_lag"):
+%     inter       +0.015141 (0.008157) p = 0.064
+%     inter_lag1  +0.039100 (0.006869) p = 1.4e-08
+%     inter_lag2  +0.013487 (0.006158) p = 0.029
+%     inter_lag3  +0.004422 (0.006243) p = 0.479
+%     inter_lag4  -0.019402 (0.010549) p = 0.066
+% The sign flipped and the lag profile PEAKS AT LAG 1 then decays and turns
+% negative. It does not grow with the lag. Note also that this column now has a
+% shape a reader will want narrated; PIPELINE_RECONCILIATION.md section 3 forbids
+% characterising the post-period, and that prohibition still stands.
+% The August 7 revision memo, line 149, records that the SSRN abstract spliced
+% the two specifications into one sentence. Do not repeat that error here.
 The distributed-lag specification is reported alongside it. Its contemporaneous
-term is $-0.0071$ and not significant. Its lagged terms are positive and grow
-with the lag. These are separate columns and separate estimands, and they
-should not be chained into a single sentence.
+term is $0.0151$ and marginal, and its lagged terms are individually significant
+at the first and second lags. The coefficients are reported without a
+characterisation of their profile, for the reason given in
+Section~\ref{sec:limits}. These are separate columns and separate estimands, and
+they should not be chained into a single sentence.
 
 % -----------------------------------------------------------------------------
 % 5.4 — FIGURE 3, TABLE 4
 % -----------------------------------------------------------------------------
 \subsection{First diagnostic: the design fails its own pre-trends test}
+\label{sec:pretrends}
 
 % RESOLVED August 11, 2026. Two pre-trend parameterizations exist in the
 % codebase and they disagree on which leads fail:
@@ -168,8 +289,20 @@ changes dated after the outcome should not predict it. Table~\ref{tab:placebo}
 adds four leads of the interaction to the main specification, and
 Figure~\ref{fig:pretrends} plots them for both sample windows.
 
-They are not zero. Lead one is $+0.0096$ ($p=0.027$) and lead two is $+0.0111$
-($p=0.015$). Lead four is $-0.0181$ ($p=0.004$). Only lead three is
+% RE-ESTIMATED August 12, 2026 on the rebuilt exposure. THE LEAD SET FLIPPED.
+%   lead   defective            rebuilt (full)
+%     1    +0.0096 (p=0.027)    +0.0157 (p=0.003)
+%     2    +0.0111 (p=0.015)    +0.0173 (p=0.002)
+%     3    -0.0034 (p=0.219)    -0.0217 (p<1e-6)   was null, now the strongest
+%     4    -0.0181 (p=0.004)    -0.0030 (p=0.759)  was rejecting, now null
+% Leads 3 and 4 traded places. The significant set is {1,2,3} in BOTH windows.
+%
+% ⚠️ THIS IS WHY FIGURE_PLAN_2026-08-11.md FORBIDS NARRATING THE PRE-PERIOD
+% SHAPE. That constraint was written on the defective data and it just paid for
+% itself: the shape moved completely while "the leads are not zero" held. Three
+% leads rejected before and three reject now. Do not describe the profile.
+They are not zero. Lead one is $+0.0157$ ($p=0.003$), lead two is $+0.0173$
+($p=0.002$), and lead three is $-0.0217$ ($p<0.001$). Only lead four is
 indistinguishable from zero. Employment in high-exposure counties was already
 moving before the policy change arrived.
 
@@ -177,11 +310,21 @@ The verdict does not depend on the sample window. Excluding 2009 to 2012 the
 same three leads reject, with coefficients that agree to three decimal places.
 Both windows appear in Figure~\ref{fig:pretrends} for that reason.
 
-% ⚠️ The figure shows THREE leads rejecting; the abstract reports "two of four."
-% That gap is deliberate and is explained in the next paragraph. Do not delete
-% the explanation, and do not change one number without the other.
+% RESOLVED August 12, 2026, after randomization inference was re-run on the
+% rebuilt exposure. SOURCE: randomization_inference_zlb-full.csv and _zlb-excl,
+% construction "time", scheme "free".
+%   lead   clustered p    RI p (full / excl)   in both?
+%     1      0.003        0.055 / 0.075        no, marginal
+%     2      0.002        0.015 / 0.020        YES
+%     3     <1e-6         <0.005 / <0.005      YES
+%     4      0.759        0.695 / 0.820        no
+% The COUNT survives at two of four. The IDENTITY changed: it was leads 2 and 4,
+% it is now leads 2 and 3, identically in both windows.
+% ⚠️ Any sentence naming which leads must be checked. Three sites carry the
+% count (here, introduction.tex, conclusion.tex); this file additionally names
+% the leads in 5.5.
 Three leads reject under clustered inference. The paper reports a count of two
-throughout, and the next section explains why: only leads two and four also
+throughout, and the next section explains why: only leads two and three also
 reject under randomization inference. Counting the intersection rather than the
 union is the conservative choice, and it is the one carried into the abstract.
 
@@ -193,33 +336,62 @@ No appeal to an outside benchmark is required.
 % -----------------------------------------------------------------------------
 \subsection{The pre-trends failure survives assumption-free inference}
 
-% SOURCE: randomization_inference_zlb-full.csv, construction "time", scheme
-% "free", 200 permutations per construction, seed 20260811.
+% ⚠️⚠️ EVERY NUMBER IN THIS SUBSECTION IS STALE, August 12, 2026. DO NOT COMPILE.
+% randomization_inference_zlb-full.csv was computed on the DEFECTIVE exposure
+% measure. The ratios 1.07 / 1.17 / 0.98 / 1.04 / 0.72, the p-values 0.010 and
+% <0.001, and the "lead one is marginal at 0.055" line are all pre-rebuild.
+% Re-run Dalis_Abdallah_RandomizationInference.R against
+% data/cbp_exposure_2002_rebuilt.dta, both windows, and rewrite this subsection
+% together with the count in 5.4.
+% Note the analytic leads have changed identity: the set is now {1,2,3}, so a
+% sentence naming "lead two and lead four" will be wrong regardless of the ratios.
+% SOURCE (STALE): randomization_inference_zlb-full.csv, construction "time",
+% scheme "free", 200 permutations per construction, seed 20260811.
 A skeptic might answer that the leads are significant only because the
 clustered standard errors are too small. Figure~\ref{fig:ri} tests that
 directly. Exposure is permuted across counties two hundred times, the model is
 re-estimated on each draw, and the spread of the placebo estimates becomes the
 null distribution.
 
-The analytic standard errors hold up. The ratio of the permutation spread to
-the clustered standard error is $1.07$ for the contemporaneous term and
-$1.17$, $0.98$, $1.04$ and $0.72$ for the four leads. Nothing here is
-understated by a meaningful factor.
+% ⚠️ THE OLD VERSION OF THIS PARAGRAPH SAID "nothing here is understated by a
+% meaningful factor." On the rebuilt exposure that is NO LONGER TRUE and the
+% claim has been withdrawn. Ratios were 1.07 / 1.17 / 0.98 / 1.04 / 0.72; they
+% are now 0.95 / 1.56 / 1.29 / 1.16 / 0.74. Lead one's permutation spread is
+% half again as wide as its clustered standard error.
+The clustered standard errors do not survive this untouched. The ratio of the
+permutation spread to the clustered standard error is $0.95$ for the
+contemporaneous term and $1.56$, $1.29$, $1.16$ and $0.74$ for the four leads.
+For the first two leads the clustered standard error is too small, by half again
+and by a quarter respectively.
 
-The leads survive. Lead two rejects at $p=0.010$ and lead four at $p<0.001$
-under randomization inference. Lead one is marginal at $p=0.055$. Two of the
-four pre-period leads therefore reject under both clustered and randomization
-inference, and that is the count reported throughout.
+That matters less than it appears, and for a reason worth stating. The lead
+whose clustered standard error is most understated is lead one, and lead one is
+the lead that fails to reject under permutation. Correcting the understatement
+pushes it further out of the count, not into it. The two leads that carry the
+result are the two whose analytic and permutation inference agree.
 
-% NOTE: the excluded-window run gives 1.08, 1.17, 0.98, 1.04, 0.72. The window
-% does not move this result. Source: PIPELINE_RECONCILIATION.md section 4h.
+The leads survive. Lead two rejects at $p=0.015$ and lead three at $p<0.005$
+under randomization inference. Lead one is marginal at $p=0.055$ and lead four
+does not reject at all. Two of the four pre-period leads therefore reject under
+both clustered and randomization inference, and that is the count reported
+throughout.
+
+% ⚠️ REPORTING CONVENTION. p_ri of exactly 0 means 0 of 200 permutations, not a
+% vanishing p-value. Report as p < 0.005, the resolution the design supports.
+% Do not print "p = 0.000" anywhere.
+
+% SOURCE: randomization_inference_zlb-excl.csv, time/free. Ratios 0.97, 1.55,
+% 1.28, 1.15, 0.74 against 0.95, 1.56, 1.29, 1.16, 0.74 in the full window.
+% p_ri 0.075 / 0.020 / <0.005 / 0.820. Same two leads in both.
 Repeating the exercise on the sample that excludes 2009 to 2012 returns the
-same ratios to two decimal places. The window choice does not drive this.
+same ratios to two decimal places, and the same two leads. The window choice
+does not drive this.
 
 % -----------------------------------------------------------------------------
 % 5.6 — FIGURES 5 AND 6
 % -----------------------------------------------------------------------------
 \subsection{Second diagnostic: precision collapses under an identified shock}
+\label{sec:lp}
 
 % SOURCE: tables/tab_signflip.csv, 13 horizons, h = 0..12. Ratios recomputed
 % from that file: min 6.30 at h=12, max 11.97 at h=3.
@@ -233,35 +405,90 @@ Bauer--Swanson surprise.
 % ⚠️ "all thirteen" is a FULL-WINDOW claim. In the excluded window the h=0
 % identified estimate is +0.0023 (se 0.4926). Do not restore an unqualified
 % "every horizon turns negative" anywhere in the paper.
+% RE-ESTIMATED August 12, 2026 on the rebuilt exposure, both windows.
+% SOURCE: tables/tab_signflip_zlb-full.csv and _zlb-excl.csv.
+%   quantity              defective        rebuilt
+%   SE ratio, full        6.31 - 11.98     5.30 - 9.97
+%   SE ratio, excl        6.14 - 12.91     5.80 - 11.65
+%   raw significant       11 of 13         8 of 13   (both windows)
+%   raw positive          13 of 13         13 of 13
+%   identified negative   13 / 12 of 13    13 / 12 of 13
+%   identified signif.    0 of 13          0 of 13
+%   smallest p(diff)      0.056            0.071  (full window, h = 2)
+%
+% ⚠️ THE EXCLUDED WINDOW WOULD STILL ROUND TO "6 TO 12". THE FULL WINDOW IS THE
+% HEADLINE AND IT IS 5.3 TO 10.0. Quoting the excluded range because it is more
+% impressive is the exact trap this project has documented three times. Do not.
 With the realized rate change the estimates are positive at all thirteen
-horizons and significant at eleven. With the identified surprise they are
+horizons and significant at eight. With the identified surprise they are
 negative at all thirteen and significant at none. The same data and the same
 specification give opposite signs and opposite verdicts.
 
 The excluded window agrees on everything that matters and differs in one
 detail worth stating plainly. Raw estimates remain positive at thirteen
-horizons and significant at eleven. Identified estimates remain significant at
-none. They are negative at twelve of thirteen rather than all thirteen: the
-contemporaneous estimate is $+0.002$ with a standard error of $0.493$. That is
-not a sign reversal. It is a coefficient indistinguishable from zero, which is
-the point being made about every identified estimate in this table.
+horizons and significant at eight. Identified estimates remain significant at
+none. They are negative at twelve of thirteen rather than all thirteen, the
+contemporaneous estimate being indistinguishable from zero. That is not a sign
+reversal. It is a coefficient the data cannot separate from zero, which is the
+point being made about every identified estimate in this table.
 
 The sign reversal is not the finding, and the paper does not claim it. Treating
 the two estimators as independent, which overstates the evidence for a
 difference because they share a sample, no horizon separates them at five
-percent. The closest is $p=0.056$.
+percent. The closest is $p=0.071$.
 
 % This is the title claim. It rests HERE, in the local projections, not in the
 % difference-in-differences. See PIPELINE_RECONCILIATION.md section 4g.
 What does separate them is precision. Figure~\ref{fig:precision} plots the two
 standard-error paths on a common axis. Identified standard errors run from
-$6.3$ to $12.0$ times wider than raw ones in the full window, and from $6.1$ to
-$12.9$ times wider excluding 2009 to 2012. The gap holds at every horizon in
+$5.3$ to $10.0$ times wider than raw ones in the full window, and from $5.8$ to
+$11.7$ times wider excluding 2009 to 2012. The gap holds at every horizon in
 both. The confidence bands do not shift. They inflate.
 
 That is the result. Replacing an endogenous measure of policy with an
 identified one does not move the estimate to a different place. It reveals that
 the estimate was never pinned down.
+
+% SOURCE: tables/tab_influence_smallcounty.csv, produced by
+% Dalis_Abdallah_InfluenceSmallCounty.R and RUN August 12, 2026. Its self-check
+% against tab_signflip_zlb-full.csv passed with a worst absolute gap of 4.4e-15.
+%   full            SE ratio  6.3-12.0   b(h=0) 0.1975   ident sig 0/13
+%   drop smallest 1 SE ratio  6.2-11.1   b(h=0) 0.1735   ident sig 0/13
+%   drop smallest 2 SE ratio  5.9-10.4   b(h=0) 0.1762   ident sig 0/13
+%   drop smallest 3 SE ratio  5.1- 9.9   b(h=0) 0.1653   ident sig 0/13
+% ⚠️ These SUPERSEDE the values first drafted here from a Python replication,
+% which put b(h=0) at 0.1595 for the drop-3 arm and the ratio floor at 5.0. The
+% Python run binned deciles over ROWS; the R script bins over COUNTIES, which is
+% the right unit and is what the paper reports. The full-sample arm was identical
+% either way, which is exactly why the dropped arms had to be re-run rather than
+% trusted. Do not restore the Python figures.
+% RE-RUN August 12, 2026 on the rebuilt exposure. Self-check passed at 4.9e-15
+% against tab_signflip_zlb-full.csv, which the LP script had already regenerated
+% on the same measure. SOURCE: tables/tab_influence_smallcounty.csv.
+%   arm                counties  SE ratio    b(h=0)   raw sig   ident sig
+%   full (published)      3,126  5.3 - 10.0  0.1575     8/13       0/13
+%   drop smallest 1       2,813  4.9 -  9.0  0.1361     7/13       0/13
+%   drop smallest 2       2,500  4.6 -  8.2  0.1542     5/13       0/13
+%   drop smallest 3       2,187  4.5 -  7.6  0.1247     4/13       0/13
+% ⚠️ Two things NOT to claim. The coefficient is again non-monotone across arms
+% (0.1575, 0.1361, 0.1542, 0.1247), so no dose-response. And the raw estimator's
+% significance count erodes hard, 8 to 4 of 13 — that is worth reporting rather
+% than burying, and it is why the paragraph below concedes it explicitly.
+The gap is not produced by the smallest counties. Outcome volatility falls
+monotonically in county size, so the natural objection is that a minority of
+very small and very noisy counties manufactures the result. Refitting after
+dropping the smallest tenth of counties by employment, then the smallest fifth,
+then the smallest three tenths, moves the ratio range from $5.3$--$10.0$ to
+$4.5$--$7.6$. No identified estimate becomes significant at any horizon in any of
+the four samples. The gap narrows and remains an order of magnitude.
+
+What does erode is the naive estimator's apparent strength. Raw estimates are
+significant at eight of thirteen horizons in the full sample and at four of
+thirteen once the smallest three tenths of counties are removed. That is worth
+conceding plainly: the precision the raw estimator displays is drawn
+disproportionately from small counties. It is also the paper's point, arriving
+by a second route. The identified estimator is significant nowhere in any
+sample, so the comparison the paper rests on is unaffected.
 
 \section{Discussion}
 
@@ -271,7 +498,7 @@ the estimate was never pinned down.
 Section~\ref{sec:shocks} showed that the realized rate change carries the
 business cycle inside it, correlating with contemporaneous employment growth at
 $+0.470$. Section~\ref{sec:lp} showed that removing that content widens the
-confidence bands by a factor of six to twelve.
+confidence bands by a factor of five to ten.
 
 Those two facts are the same fact. The naive design looks precise because most
 of the variation it uses is cyclical, not monetary. Cyclical variation is
@@ -317,7 +544,9 @@ estimator, or a structural model.
 % ⚠️ NON-NEGOTIABLE. Agreed August 11, 2026: AKM stays parked, but the paper
 % must SAY it is untested rather than omit it. See PIPELINE_RECONCILIATION.md
 % sections 4b, 4c, 4f.
-Three limitations deserve statement rather than burial.
+% ⚠️ COUNT. This said "Three" while four were listed, and a fifth was added
+%    August 12. If a limitation is added or removed, change this word.
+Five limitations deserve statement rather than burial.
 
 First, exposure-robust inference is untested here. \citet{adao2019} show that
 conventional standard errors can be severely understated in shift-share designs
@@ -355,5 +584,35 @@ reflect a small number of effective clusters.
 
 The comparison this paper makes is unaffected. Both estimators are clustered
 identically, so the ratio between them cannot be an artifact of the cluster
-count. The reported ratio of 6 to 12 is a within-design comparison, not a
+count. The reported ratio of 5 to 10 is a within-design comparison, not a
 statement about the absolute width of either interval.
+
+% ⚠️ SURFACED August 12, 2026 by the small-county influence check. This was not
+% anticipated and it is not implied by anything else in the paper, so it gets
+% its own limitation rather than a clause inside another one.
+% SOURCE: computed on the estimation sample (2,887 counties, 207,640 rows),
+% with size deciles taken over COUNTIES as in Dalis_Abdallah_InfluenceSmallCounty.R.
+% corr(log median county employment, 2002 exposure share) = +0.539.
+% Mean exposure 0.131 in the smallest size decile against 0.607 in the largest;
+% sd of the h = 0 outcome 9.67 against 2.57.
+% ⚠️ The sd figures were first drafted as 9.1 and 2.4 from row-binned deciles.
+% County-binned is the correct unit. Do not restore the earlier pair.
+% [EXPOSURE-DEPENDENT] ⚠️ HOLD THIS LIMITATION. Added August 12 and undercut the
+% same day. Larger counties report deeper industry detail, so they accumulate
+% more NAICS hierarchy levels and a larger over-count. The +0.54 correlation may
+% therefore be an artifact of the construction defect rather than a fact about
+% industrial geography. Do NOT publish this paragraph until the rebuilt measure
+% reproduces the correlation. If it does not, delete the paragraph outright.
+Fifth, exposure is correlated with county size. Across the estimation sample the
+2002 exposure share correlates with log median county employment at $+0.54$:
+mean exposure is $0.13$ in the smallest tenth of counties and $0.61$ in the
+largest. Outcome volatility runs the other way, falling from a standard
+deviation of $9.7$ in the smallest tenth to $2.6$ in the largest. So the
+exposure measure is in part a proxy for county size and urbanisation, and the
+interaction cannot separate a differential response to policy that operates
+through industrial composition from one that operates through whatever else
+distinguishes large counties from small ones. This is a second reason the
+shift-share coefficient should not be read causally, independent of the
+pre-trends failure in Section~\ref{sec:pretrends}. It does not bear on the
+precision comparison, which is estimated on a fixed sample with the shock
+measure as the only thing that changes.

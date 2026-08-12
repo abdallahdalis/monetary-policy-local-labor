@@ -1,7 +1,7 @@
 "quantity","full","excl"
 "raw positive",13,13
-"raw significant",11,11
+"raw significant",8,8
 "identified negative",13,12
 "identified significant",0,0
-"SE ratio min",6.31,6.14
-"SE ratio max",11.98,12.91
+"SE ratio min",5.3,5.8
+"SE ratio max",9.98,11.65

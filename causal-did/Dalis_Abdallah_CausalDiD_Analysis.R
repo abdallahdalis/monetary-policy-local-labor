@@ -176,7 +176,26 @@ cat(sprintf("quarters %d | dffr mean %.4f sd %.4f min %.3f max %.3f\n",
             min(ffr_keep$dffr, na.rm = TRUE), max(ffr_keep$dffr, na.rm = TRUE)))
 
 # --- 1.4 CBP 2002 exposure — MAIN, fully predetermined -----------------------
-cbp02 <- read_dta(file.path(DATA, "cbp_exposure_2002.dta")) %>%
+#  Repointed August 12, 2026 to the REBUILT measure. The original build summed
+#  every level of the NAICS hierarchy into the numerator while the denominator
+#  counted each worker once; see EXPOSURE_DEFECT_2026-08-12.md and
+#  Dalis_Abdallah_RebuildExposure.R. Old median 0.4555, rebuilt 0.2043.
+#  The rebuilt file lives in this project's own data/, which is NOT where DATA
+#  resolves to, so it is resolved separately rather than assumed to sit beside
+#  the panel.
+EXPO_CANDIDATES <- c(file.path(DATA, "cbp_exposure_2002_rebuilt.dta"),
+                     "../data/cbp_exposure_2002_rebuilt.dta",
+                     "data/cbp_exposure_2002_rebuilt.dta",
+                     "~/Documents/projects/monetary-policy-local-labor/data/cbp_exposure_2002_rebuilt.dta")
+EXPO <- NA_character_
+for (p in EXPO_CANDIDATES)
+  if (file.exists(path.expand(p))) { EXPO <- path.expand(p); break }
+if (is.na(EXPO)) stop(
+  "Rebuilt exposure file not found. Run Dalis_Abdallah_RebuildExposure.R from ",
+  "the project root first. Looked in: ", paste(EXPO_CANDIDATES, collapse = ", "))
+cat(sprintf("exposure  : %s\n", EXPO))
+
+cbp02 <- read_dta(EXPO) %>%
   mutate(area_fips = as.character(area_fips),
          exp_sens  = as.numeric(exp_sens_2002)) %>%
   select(area_fips, exp_sens)

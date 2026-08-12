@@ -40,12 +40,37 @@
 #  operator. It was the filter. monetary_policy_labor.R uses
 #  `month3_emplvl > 0`, which drops 32 further rows out of 207,672.
 #
-#  Those 32 rows, 0.015 percent of the sample, move the headline SE ratio range
-#  from 6.3-12.0 to 4.2-9.6. A third of the headline number rests on a filter
-#  choice affecting thirty-two county-quarters. The published filter is the
-#  defensible one, since non-positive employment has no business in a log
-#  specification, but the SENSITIVITY IS ITSELF A FINDING and is logged in
-#  TASKS.md as an influence check owed before publication.
+#  ⚠️ REVISED AUGUST 12, 2026 — THE EARLIER FRAMING HERE WAS WRONG.
+#
+#  This note used to say those 32 rows "move the headline SE ratio range from
+#  6.3-12.0 to 4.2-9.6", that "a third of the headline number rests on a filter
+#  choice", and that the SENSITIVITY IS ITSELF A FINDING. That reads the two
+#  filters as two defensible screens giving different answers. They are not.
+#
+#  `is.finite(ln_emp)` SCREENS NOTHING. In qcew_panel_all_years.dta, ln_emp is
+#  coded 0 wherever month3_emplvl is 0 — log(0) became 0 upstream, not -Inf. All
+#  232,008 rows pass is.finite(). It is a no-op, not an alternative.
+#
+#  The 32 rows are zero-employment county-quarters carrying ln_emp = 0, against
+#  a median county of 8.991 and a minimum among positives of 3.219. Each sits
+#  about nine log points below any real county. At h = 0 they double the outcome
+#  standard deviation, 5.29 -> 10.52, and stretch its range from [-108, +181] to
+#  [-821, +822].
+#
+#  Eleven counties, all small, and two of them are FIPS-recode pairs: Wade
+#  Hampton -> Kusilvak (AK, 2015) and Shannon -> Oglala Lakota (SD, 2015). The
+#  zeros cluster at rename boundaries. They are construction artifacts.
+#
+#  So 4.2-9.6 is NOT a robustness range. It is a contaminated estimate, and
+#  reporting it as a sensitivity would overstate the paper's fragility and
+#  invite a referee to ask why a broken screen was run at all. Do not report it.
+#
+#  What IS worth carrying: this panel codes log(0) as 0, so a screen that looks
+#  equivalent silently admits 32 catastrophic-leverage rows. Methods states the
+#  screen is on employment levels for that reason.
+#
+#  ⚠️ Also refuted August 12: these are NOT the exposure outliers at 0.9997.
+#  Zero overlap with the top-15 exposure counties. Two separate open items.
 #
 #  Input : qcew_panel_all_years.dta, FEDFUNDS.csv, cbp_exposure_2002.dta,
 #          bauer_swanson_mps.xlsx, tables/tab_signflip.csv (for the self-check)
@@ -102,7 +127,24 @@ panel <- read_dta(file.path(DATA, "qcew_panel_all_years.dta")) %>%
   filter(year >= 2002, year <= 2019, month3_emplvl > 0) %>%
   select(area_fips, year, qtr, qidx, ln_emp)
 
-cbp02 <- read_dta(file.path(DATA, "cbp_exposure_2002.dta")) %>%
+#  Repointed August 12, 2026 to the REBUILT measure; see
+#  EXPOSURE_DEFECT_2026-08-12.md and causal-did/Dalis_Abdallah_RebuildExposure.R.
+#  ⚠️ The self-check against tables/tab_signflip.csv was computed on the OLD
+#  measure and will now disagree by construction. That is correct behaviour, not
+#  a regression: retire the old reference rather than loosen the tolerance.
+EXPO_CANDIDATES <- c(file.path(DATA, "cbp_exposure_2002_rebuilt.dta"),
+                     "data/cbp_exposure_2002_rebuilt.dta",
+                     "../data/cbp_exposure_2002_rebuilt.dta",
+                     "~/Documents/projects/monetary-policy-local-labor/data/cbp_exposure_2002_rebuilt.dta")
+EXPO <- NA_character_
+for (p in EXPO_CANDIDATES)
+  if (file.exists(path.expand(p))) { EXPO <- path.expand(p); break }
+if (is.na(EXPO)) stop(
+  "Rebuilt exposure file not found. Run causal-did/Dalis_Abdallah_RebuildExposure.R ",
+  "from the project root first. Looked in: ", paste(EXPO_CANDIDATES, collapse = ", "))
+cat(sprintf("exposure : %s\n", EXPO))
+
+cbp02 <- read_dta(EXPO) %>%
   mutate(area_fips = sprintf("%05s", as.character(area_fips)),
          exp_sens  = as.numeric(exp_sens_2002)) %>%
   select(area_fips, exp_sens)

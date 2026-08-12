@@ -107,7 +107,26 @@ for (k in 1:4) {
 ffr_keep <- ffr %>% filter(year >= 2002) %>%
   select(year, qtr, dffr, starts_with("dffr_lag"), starts_with("dffr_lead"))
 
-cbp02 <- read_dta(file.path(DATA, "cbp_exposure_2002.dta")) %>%
+#  Repointed August 12, 2026 to the REBUILT measure; see
+#  EXPOSURE_DEFECT_2026-08-12.md and Dalis_Abdallah_RebuildExposure.R. The
+#  rebuilt file lives in this project's own data/, not where DATA resolves to,
+#  so it is resolved separately.
+#  ⚠️ Dalis_Abdallah_RandomizationInference.R shares this section 1.0 build and
+#  must be repointed and re-run too. Until it is, the RI counts quoted in
+#  sections 3.0 and 4.0 below are computed on the OLD measure.
+EXPO_CANDIDATES <- c(file.path(DATA, "cbp_exposure_2002_rebuilt.dta"),
+                     "../data/cbp_exposure_2002_rebuilt.dta",
+                     "data/cbp_exposure_2002_rebuilt.dta",
+                     "~/Documents/projects/monetary-policy-local-labor/data/cbp_exposure_2002_rebuilt.dta")
+EXPO <- NA_character_
+for (p in EXPO_CANDIDATES)
+  if (file.exists(path.expand(p))) { EXPO <- path.expand(p); break }
+if (is.na(EXPO)) stop(
+  "Rebuilt exposure file not found. Run Dalis_Abdallah_RebuildExposure.R from ",
+  "the project root first. Looked in: ", paste(EXPO_CANDIDATES, collapse = ", "))
+cat(sprintf("exposure : %s\n", EXPO))
+
+cbp02 <- read_dta(EXPO) %>%
   mutate(area_fips = as.character(area_fips),
          exp_sens  = as.numeric(exp_sens_2002)) %>%
   select(area_fips, exp_sens)
@@ -270,19 +289,60 @@ if (identical(sig_full, sig_excl)) {
   cat("under both windows, so the difference-in-differences estimate cannot be read\n")
   cat("causally.\n")
 }
-# The figure shows THREE leads rejecting while the abstract reports "two of four."
-# That gap is deliberate and has to be explained here, or a reader will take it
-# for an inconsistency.
-cat("Of these, leads 2 and 4 also reject under randomization inference, while lead 1\n")
-cat("is marginal (p = 0.055). The paper reports the two-lead count throughout, which\n")
-cat("is the conservative reading: it counts only leads that fail under both methods.\n")
+# The figure shows more leads rejecting under clustered inference than the paper
+# reports, because the reported count is the INTERSECTION with randomization
+# inference. That gap is deliberate and has to be explained here, or a reader
+# will take it for an inconsistency.
+#
+# ⚠️ AMENDED August 12, 2026. These three lines used to READ "leads 2 and 4 also
+# reject under randomization inference, while lead 1 is marginal (p = 0.055)."
+# They were prose, not a computation: the numbers were transcribed from an RI run
+# that predated the exposure rebuild, and they stayed put while the RI file
+# underneath them changed to leads 2 and 3. A caption that asserts a number it
+# did not compute is the same defect this project has now documented five times.
+# The block below DERIVES the intersection from the RI file, and says so if the
+# file is missing rather than falling back on a remembered answer.
+RI_PATH <- file.path(OUT, "tables", "randomization_inference_zlb-full.csv")
+if (file.exists(RI_PATH)) {
+  ri <- read.csv(RI_PATH, stringsAsFactors = FALSE)
+  ri <- ri[ri$construction == "time" & ri$scheme == "free" &
+             grepl("^inter_lead", ri$term), ]
+  ri$lead <- as.integer(sub("^inter_lead", "", ri$term))
+  ri <- ri[order(ri$lead), ]
+  ri_sig  <- ri$lead[ri$p_ri < 0.05]
+  both    <- intersect(sig_full, ri_sig)
+  marginal <- ri$lead[ri$p_ri >= 0.05 & ri$p_ri < 0.10 & ri$lead %in% sig_full]
+  cat(sprintf(
+    "Of these, lead%s %s also reject under randomization inference",
+    if (length(both) == 1) "" else "s", fmt_list(both)))
+  if (length(marginal) > 0)
+    cat(sprintf(", while lead%s %s\n%s (p = %s)",
+                if (length(marginal) == 1) "" else "s", fmt_list(marginal),
+                if (length(marginal) == 1) "is marginal" else "are marginal",
+                paste(sprintf("%.3f", ri$p_ri[ri$lead %in% marginal]),
+                      collapse = ", ")))
+  cat(".\n")
+  cat(sprintf(
+    "The paper reports the %d-lead count throughout, which is the conservative\n",
+    length(both)))
+  cat("reading: it counts only leads that fail under both methods.\n")
 
-cat("\n----- CONSISTENCY CHECK AGAINST THE ABSTRACT -----\n")
-cat(" The abstract says two of four leads are significant under BOTH clustered\n")
-cat(" and randomization inference. That count comes from intersecting this\n")
-cat(" table with randomization_inference_zlb-full.csv, where lead 2 gives\n")
-cat(" p = 0.010 and lead 4 gives p = 0.000, while lead 1 is marginal at 0.055.\n")
-cat(" If the analytic leads above ever stop including 2 and 4, the abstract\n")
-cat(" sentence has to change with them.\n")
+  cat("\n----- CONSISTENCY CHECK AGAINST THE ABSTRACT -----\n")
+  cat(sprintf(" Clustered inference rejects leads %s. Randomization inference rejects\n",
+              fmt_list(sig_full)))
+  cat(sprintf(" leads %s. The intersection, which is what the paper reports, is %s.\n",
+              fmt_list(ri_sig), fmt_list(both)))
+  cat(" RI p-values, time construction, free scheme:\n")
+  for (i in seq_len(nrow(ri)))
+    cat(sprintf("   lead %d : p_ri = %.3f%s\n", ri$lead[i], ri$p_ri[i],
+                if (ri$p_ri[i] == 0) "   (0 of 200 draws; report as p < 0.005)" else ""))
+  cat(sprintf(" The abstract submitted August 11 says TWO of four. That is %s.\n",
+              if (length(both) == 2) "still the count" else
+                "NO LONGER THE COUNT -- the abstract sentence has to change"))
+} else {
+  cat("\n⚠️ randomization_inference_zlb-full.csv not found. The reported lead count\n")
+  cat("   is the intersection of this table with that file and CANNOT be stated\n")
+  cat("   without it. Run Dalis_Abdallah_RandomizationInference.R.\n")
+}
 
 cat("\n----- DONE -----\n")
