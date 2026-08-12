@@ -1,0 +1,9 @@
+"quantity","value","p_value"
+"cor(raw, emp growth)",0.4696,0
+"cor(identified, emp growth)",-0.1195,0.321
+"cor(raw, identified)",-0.0095,NA
+"R2 emp on raw",0.2205,NA
+"R2 emp on identified",0.0143,NA
+"cor(raw, emp growth) excl 2009-2012",0.662,NA
+"cor(raw, emp growth) Spearman",0.502,NA
+"cor(identified, emp growth) excl 2009-2012",-0.077,NA

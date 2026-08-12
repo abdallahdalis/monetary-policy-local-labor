@@ -1,0 +1,359 @@
+% =============================================================================
+%  Spurious Precision: Why Shift-Share Designs Overstate Monetary Policy
+%                      Effects on Local Employment
+%  Results and Discussion — draft of August 11, 2026
+%  Author: Abdallah Dalis
+%
+%  Written first, per 00_Resources/research-paper-writing-process.md step 4.
+%  Methods, Introduction, Conclusion and Abstract follow from this file, not
+%  the other way round.
+%
+%  EVERY NUMBER BELOW IS SOURCED. Provenance is given in a comment above each
+%  claim. Do not edit a figure in this file without re-checking its source.
+%    tables/tab_signflip.csv
+%    tables/tab_shock_comparison.csv
+%    causal-did/output/tables/all_coefficients_R_zlb-full_pos-off.csv
+%    causal-did/output/tables/randomization_inference_zlb-full.csv
+% =============================================================================
+
+\section{Results}
+
+% -----------------------------------------------------------------------------
+% 5.1 — FIGURE 1
+% -----------------------------------------------------------------------------
+\subsection{Where the identifying variation comes from}
+
+% SOURCE: causal-did/output/tables/tab_exposure_descriptives.csv and
+% tab_exposure_by_state.csv, produced by Dalis_Abdallah_ExposureDescriptives.R
+% on 2026-08-11. The median 0.4555 cross-checks against the independent
+% median-split value 0.455516 in PIPELINE_RECONCILIATION.md section 2, H2.
+%
+% ⚠️ The geography sentence below was REWRITTEN August 11. The first draft said
+% exposure concentrates in the industrial Midwest and interior South and thins
+% in coastal metros. That was written from general knowledge, not from the
+% exposure file, and the file disagrees: four of the ten highest-exposure states
+% are in New England. Do not restore the earlier wording.
+Figure~\ref{fig:exposure} maps the exposure measure. Exposure is the share of
+county employment in construction and manufacturing in 2002, taken from County
+Business Patterns and held fixed thereafter. The share is predetermined, so it
+cannot respond to later policy.
+
+The spread is wide. Across 2{,}889 counties the mean share is $0.448$ and the
+median $0.456$, with a standard deviation of $0.252$. The tenth percentile is
+$0.078$ and the ninetieth is $0.787$, a ratio of about ten to one. Counties are
+not mildly more or less exposed than one another. They differ by an order of
+magnitude.
+
+The map does the work a summary table cannot, because the variation is
+geographic rather than idiosyncratic. Ranked by mean county exposure, the
+highest states are New Hampshire, Wisconsin, South Carolina, Connecticut and
+Massachusetts, followed by Pennsylvania, Indiana, Ohio, Tennessee and Rhode
+Island. This is the older manufacturing belt, and it reaches into New England
+rather than stopping at the Midwest. The lowest are the Great Plains and the
+Mountain West: Kansas, Oklahoma, New Mexico, Nebraska, Nevada, the Dakotas,
+Montana and Alaska, with the District of Columbia lowest of all at $0.082$.
+
+That geography matters twice over. It is the source of the cross-sectional
+variation the design exploits, and it is the reason that variation is spatially
+correlated, which Section~\ref{sec:limits} returns to.
+
+% ⚠️ Flagged August 11, not yet investigated. Raised here so it is not lost.
+Two features of the distribution warrant a check before publication. The
+minimum is $0.000$ and the maximum is $0.9997$. A county reporting essentially
+all of its employment in construction and manufacturing is more likely a small
+county whose other industries were suppressed in County Business Patterns than
+a genuine single-industry economy. Whether such counties are influential is
+not established here.
+
+% -----------------------------------------------------------------------------
+% 5.2 — FIGURE 2
+% -----------------------------------------------------------------------------
+\subsection{Two measures of monetary policy that share almost nothing}
+
+% SOURCE: tables/tab_shock_comparison.csv, produced by
+% Dalis_Abdallah_ShockComparison_Figure.R on 2026-08-11. 71 quarters.
+Applied work measures monetary policy in two ways. The first is the realized
+change in the federal funds rate. The second is a high-frequency surprise,
+here the orthogonalized Bauer--Swanson series. Papers substitute one for the
+other freely. Figure~\ref{fig:shocks} shows what that substitution does.
+
+Over 2002 to 2019, the two series correlate at $-0.010$. They share essentially
+no variation. Some of that is by construction, since the Bauer--Swanson series
+is purged of macroeconomic and financial information available before the
+meeting. The point is not that the orthogonality is surprising. The point is
+that the two measures are treated as interchangeable anyway.
+
+The bottom panels show which of them is contaminated. The realized rate change
+correlates with contemporaneous national employment growth at $+0.470$
+($p<0.001$), explaining 22 percent of its variance. The identified surprise
+correlates at $-0.119$ ($p=0.321$), explaining 1.4 percent.
+
+That positive sign is not the effect of policy on employment. If it were,
+tightening would raise employment, which is the reading this paper rejects.
+It is the Federal Reserve responding to a strong labor market.
+
+% ROBUSTNESS: the leverage objection, tested and reversed.
+The scatter is visibly leveraged by crisis quarters, so the natural objection
+is that the correlation is an artifact of 2008. It is not. Excluding 2009 to
+2012 the correlation rises to $+0.662$, and the rank correlation over the full
+window is $+0.502$. Both are reported on the figure.
+
+The reason the correlation strengthens is instructive. At the zero lower bound
+the funds rate was pinned near zero while employment moved a great deal. Those
+quarters pair a flat policy series with a volatile cycle, which pulls the
+correlation toward zero. They are periods when the Federal Reserve could not
+respond. Removing them does not remove outliers. It removes the episode in
+which the reaction function was suppressed.
+
+\textbf{This makes the headline window the conservative one.} The endogeneity
+priced in this paper is larger in the robustness sample than in the sample the
+main results use.
+
+% -----------------------------------------------------------------------------
+% 5.3 — TABLE 2
+% -----------------------------------------------------------------------------
+\subsection{The naive estimate is precise, and it points the wrong way}
+
+% SOURCE: all_coefficients_R_zlb-full_pos-off.csv, spec "main_spec", term "inter"
+% b = 0.0222810, se = 0.00434852, p = 3.19e-07, full 2002-2019.
+% DO NOT substitute the placebo spec's 0.0240 here. Different estimand.
+% See ABSTRACT_2026-08-11.md, "What changed", item 1.
+Table~\ref{tab:main} reports the shift-share difference-in-differences estimate.
+Regressing log county employment on the interaction of the quarterly funds rate
+change with 2002 exposure, absorbing county and quarter fixed effects, gives a
+contemporaneous coefficient of $0.0223$ with a standard error of $0.0043$
+clustered by county. The $p$-value is $3\times10^{-7}$.
+
+Read directly, counties with more construction and manufacturing employment
+\emph{gain} employment when the Federal Reserve tightens. That contradicts both
+theory and \citet{carlino1998}.
+
+The estimate is also stable. It survives alternative base years for the
+exposure measure and an employment-growth outcome. A reader with only this
+table has a precisely estimated, robust, and wrong-signed result, and no
+obvious reason to distrust it.
+
+% NOTE: the distributed-lag specification is a DIFFERENT column. Its
+% contemporaneous term is -0.0071 and insignificant (p = 0.172). The August 7
+% revision memo, line 149, records that the SSRN abstract spliced the two
+% specifications into one sentence. Do not repeat that error here.
+The distributed-lag specification is reported alongside it. Its contemporaneous
+term is $-0.0071$ and not significant. Its lagged terms are positive and grow
+with the lag. These are separate columns and separate estimands, and they
+should not be chained into a single sentence.
+
+% -----------------------------------------------------------------------------
+% 5.4 — FIGURE 3, TABLE 4
+% -----------------------------------------------------------------------------
+\subsection{First diagnostic: the design fails its own pre-trends test}
+
+% RESOLVED August 11, 2026. Two pre-trend parameterizations exist in the
+% codebase and they disagree on which leads fail:
+%   placebo      continuous inter_lead1..4 -> significant leads 1, 2, 4
+%   event_study  binary hi_lead1..4        -> significant leads 3, 4
+% Lead 3 is the sharp disagreement: -0.0034 (p = 0.219) against +0.0044
+% (p = 0.004). DECISION: the paper uses the PLACEBO spec, because the abstract's
+% count and the randomization inference in sections 4c and 4h were both computed
+% on those coefficients. Figure 3 now plots the same object
+% (Dalis_Abdallah_PreTrendsFigure.R). The event-study parameterization is not
+% used for the pre-trends claim. Do not mix them.
+%
+% SOURCE: causal-did/output/tables/tab_pretrends_both_windows.csv
+%   full 2002-2019 , n = 196,148 : lead1 +0.0096 p=0.027 | lead2 +0.0111 p=0.015
+%                                  lead3 -0.0034 p=0.219 | lead4 -0.0181 p=0.004
+%   excl 2009-2012 , n = 150,004 : lead1 +0.0095 p=0.029 | lead2 +0.0104 p=0.024
+%                                  lead3 -0.0035 p=0.208 | lead4 -0.0177 p=0.005
+The design carries its own falsification test. If parallel trends holds, policy
+changes dated after the outcome should not predict it. Table~\ref{tab:placebo}
+adds four leads of the interaction to the main specification, and
+Figure~\ref{fig:pretrends} plots them for both sample windows.
+
+They are not zero. Lead one is $+0.0096$ ($p=0.027$) and lead two is $+0.0111$
+($p=0.015$). Lead four is $-0.0181$ ($p=0.004$). Only lead three is
+indistinguishable from zero. Employment in high-exposure counties was already
+moving before the policy change arrived.
+
+The verdict does not depend on the sample window. Excluding 2009 to 2012 the
+same three leads reject, with coefficients that agree to three decimal places.
+Both windows appear in Figure~\ref{fig:pretrends} for that reason.
+
+% ⚠️ The figure shows THREE leads rejecting; the abstract reports "two of four."
+% That gap is deliberate and is explained in the next paragraph. Do not delete
+% the explanation, and do not change one number without the other.
+Three leads reject under clustered inference. The paper reports a count of two
+throughout, and the next section explains why: only leads two and four also
+reject under randomization inference. Counting the intersection rather than the
+union is the conservative choice, and it is the one carried into the abstract.
+
+This is fatal to the causal reading, and it is fatal on the design's own terms.
+No appeal to an outside benchmark is required.
+
+% -----------------------------------------------------------------------------
+% 5.5 — FIGURE 4
+% -----------------------------------------------------------------------------
+\subsection{The pre-trends failure survives assumption-free inference}
+
+% SOURCE: randomization_inference_zlb-full.csv, construction "time", scheme
+% "free", 200 permutations per construction, seed 20260811.
+A skeptic might answer that the leads are significant only because the
+clustered standard errors are too small. Figure~\ref{fig:ri} tests that
+directly. Exposure is permuted across counties two hundred times, the model is
+re-estimated on each draw, and the spread of the placebo estimates becomes the
+null distribution.
+
+The analytic standard errors hold up. The ratio of the permutation spread to
+the clustered standard error is $1.07$ for the contemporaneous term and
+$1.17$, $0.98$, $1.04$ and $0.72$ for the four leads. Nothing here is
+understated by a meaningful factor.
+
+The leads survive. Lead two rejects at $p=0.010$ and lead four at $p<0.001$
+under randomization inference. Lead one is marginal at $p=0.055$. Two of the
+four pre-period leads therefore reject under both clustered and randomization
+inference, and that is the count reported throughout.
+
+% NOTE: the excluded-window run gives 1.08, 1.17, 0.98, 1.04, 0.72. The window
+% does not move this result. Source: PIPELINE_RECONCILIATION.md section 4h.
+Repeating the exercise on the sample that excludes 2009 to 2012 returns the
+same ratios to two decimal places. The window choice does not drive this.
+
+% -----------------------------------------------------------------------------
+% 5.6 — FIGURES 5 AND 6
+% -----------------------------------------------------------------------------
+\subsection{Second diagnostic: precision collapses under an identified shock}
+
+% SOURCE: tables/tab_signflip.csv, 13 horizons, h = 0..12. Ratios recomputed
+% from that file: min 6.30 at h=12, max 11.97 at h=3.
+The second diagnostic holds the design fixed and changes only the shock.
+Figure~\ref{fig:lp} plots local projections of the exposure interaction across
+horizons zero to twelve, first with the realized rate change and then with the
+Bauer--Swanson surprise.
+
+% SOURCE: tables/tab_signflip_zlb-full.csv and tab_signflip_zlb-excl.csv,
+% produced by Dalis_Abdallah_LocalProjections_BothWindows.R on 2026-08-11.
+% ⚠️ "all thirteen" is a FULL-WINDOW claim. In the excluded window the h=0
+% identified estimate is +0.0023 (se 0.4926). Do not restore an unqualified
+% "every horizon turns negative" anywhere in the paper.
+With the realized rate change the estimates are positive at all thirteen
+horizons and significant at eleven. With the identified surprise they are
+negative at all thirteen and significant at none. The same data and the same
+specification give opposite signs and opposite verdicts.
+
+The excluded window agrees on everything that matters and differs in one
+detail worth stating plainly. Raw estimates remain positive at thirteen
+horizons and significant at eleven. Identified estimates remain significant at
+none. They are negative at twelve of thirteen rather than all thirteen: the
+contemporaneous estimate is $+0.002$ with a standard error of $0.493$. That is
+not a sign reversal. It is a coefficient indistinguishable from zero, which is
+the point being made about every identified estimate in this table.
+
+The sign reversal is not the finding, and the paper does not claim it. Treating
+the two estimators as independent, which overstates the evidence for a
+difference because they share a sample, no horizon separates them at five
+percent. The closest is $p=0.056$.
+
+% This is the title claim. It rests HERE, in the local projections, not in the
+% difference-in-differences. See PIPELINE_RECONCILIATION.md section 4g.
+What does separate them is precision. Figure~\ref{fig:precision} plots the two
+standard-error paths on a common axis. Identified standard errors run from
+$6.3$ to $12.0$ times wider than raw ones in the full window, and from $6.1$ to
+$12.9$ times wider excluding 2009 to 2012. The gap holds at every horizon in
+both. The confidence bands do not shift. They inflate.
+
+That is the result. Replacing an endogenous measure of policy with an
+identified one does not move the estimate to a different place. It reveals that
+the estimate was never pinned down.
+
+\section{Discussion}
+
+\subsection{What the precision was made of}
+
+% Ties 5.6 back to 5.2. This is the paper's central argument in one paragraph.
+Section~\ref{sec:shocks} showed that the realized rate change carries the
+business cycle inside it, correlating with contemporaneous employment growth at
+$+0.470$. Section~\ref{sec:lp} showed that removing that content widens the
+confidence bands by a factor of six to twelve.
+
+Those two facts are the same fact. The naive design looks precise because most
+of the variation it uses is cyclical, not monetary. Cyclical variation is
+abundant, systematic, and strongly correlated with the outcome, so it produces
+tight standard errors. It is also exactly the variation an identification
+strategy is supposed to remove.
+
+The design was not estimating the effect of monetary policy precisely. It was
+estimating something else precisely.
+
+\subsection{Two diagnostics, two different failures}
+
+The paper reports two problems, and they are independent.
+
+The shift-share difference-in-differences fails because parallel trends fails.
+Its standard errors are not the issue. They survive a mechanism test, a
+cluster-versus-iid comparison, free-permutation randomization inference, and a
+within-state permutation. By the last of those they look conservative rather
+than anti-conservative.
+
+The local projection design fails for the opposite reason. Its point estimates
+behave sensibly once the shock is identified. What collapses is precision.
+
+A referee unmoved by one still has to answer the other. That is the value of
+reporting both rather than choosing the more striking one.
+
+\subsection{What this means for applied practice}
+
+The recommendation is narrow and cheap to follow. Report both estimators.
+
+A shift-share design estimated on realized policy rates should be presented
+next to the same design estimated on an identified shock, and the comparison
+should be read on the standard errors rather than the coefficients. A large
+gap is diagnostic. It says the reported precision is borrowed from variation
+the design was meant to exclude.
+
+This costs one additional column. It does not require a new dataset, a new
+estimator, or a structural model.
+
+\subsection{Limitations}
+\label{sec:limits}
+
+% ⚠️ NON-NEGOTIABLE. Agreed August 11, 2026: AKM stays parked, but the paper
+% must SAY it is untested rather than omit it. See PIPELINE_RECONCILIATION.md
+% sections 4b, 4c, 4f.
+Three limitations deserve statement rather than burial.
+
+First, exposure-robust inference is untested here. \citet{adao2019} show that
+conventional standard errors can be severely understated in shift-share designs
+when a small number of common sectoral shocks drive exposure. That concern is
+live in this setting and it is not addressed by the permutation schemes
+reported above. Free permutation destroys the spatial correlation of exposure,
+and within-state permutation narrows the null mechanically because industrial
+structure is regionally correlated. Neither simulates correlated sectoral
+shocks. The appropriate tool is the Adão--Kolesár--Morales variance estimator,
+and applying it is left to future work.
+
+% ⚠️ STANDING CONSTRAINT. The post-period shape is NOT identified. Do not call
+% it dynamic, oscillating, or flat. hi_inter ranges +0.0034 to -0.0041 across
+% defensible configurations with significance flipping. See
+% PIPELINE_RECONCILIATION.md section 3.
+Second, the event-study post-period is not identified. Its coefficients move
+across defensible choices about how lagged variables are constructed, and their
+significance moves with them. The coefficients are reported. Their shape is not
+described, because no description of it would be stable.
+
+Third, the identified estimates are imprecise enough that they cannot establish
+a sign. This paper claims that the naive precision is an artifact. It does not
+claim to have recovered the true effect. Those are different results, and only
+the first is supported here.
+
+% ⚠️ Surfaced while writing Methods, August 11. The LP clusters by QUARTER
+% (monetary_policy_labor.R line 197) while the DiD clusters by COUNTY. State
+% this rather than let a referee find it.
+Fourth, the local projections cluster by quarter, so their inference rests on
+72 clusters rather than on the number of county-quarter observations. That is
+the right choice, because the shock has no cross-sectional variation and the
+dependence that matters runs across counties within a quarter. It does mean the
+levels of the standard errors in Figures~\ref{fig:lp} and~\ref{fig:precision}
+reflect a small number of effective clusters.
+
+The comparison this paper makes is unaffected. Both estimators are clustered
+identically, so the ratio between them cannot be an artifact of the cluster
+count. The reported ratio of 6 to 12 is a within-design comparison, not a
+statement about the absolute width of either interval.

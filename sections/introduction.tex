@@ -1,0 +1,149 @@
+% =============================================================================
+%  Spurious Precision: Why Shift-Share Designs Overstate Monetary Policy
+%                      Effects on Local Employment
+%  Plain-Language Summary + Introduction — draft of August 11, 2026
+%  Author: Abdallah Dalis
+%
+%  Written after Results, Discussion and Methods, per step 6 of
+%  00_Resources/research-paper-writing-process.md. Nothing here introduces a
+%  claim those sections do not already support.
+%
+%  ⚠️ REFERENCES ARE NOT YET VERIFIED FOR THIS PAPER. Keys used below:
+%     carlino1998         Carlino & DeFina. Corrected to 1998 (not 1999) during
+%                         the Part 3 reference check, June 15 2026.
+%     bartik1991, goldsmithpinkham2020, jorda2005, nakamura2018, bauer2023
+%                         Carried over from the Part 3 bibliography, which was
+%                         verified against publisher records June 15 2026.
+%     adao2019            Adao, Kolesar & Morales, "Shift-Share Designs: Theory
+%                         and Inference." PIPELINE_RECONCILIATION.md section 4b
+%                         says VERIFY BEFORE CITING and that has not been done.
+%                         Do not compile this to a submitted PDF until it is.
+% =============================================================================
+
+% -----------------------------------------------------------------------------
+%  PLAIN-LANGUAGE SUMMARY BOX
+%  Required on every empirical paper. Style: shaded box titled "Plain-Language
+%  Summary", per Research_Monetary_Incidence/style_template/dalis-econ-style.sty.
+%  Environment name below assumes that .sty; adjust if the macro differs.
+% -----------------------------------------------------------------------------
+\begin{plainsummary}
+
+\textbf{What was asked.} When the Federal Reserve raises interest rates, some
+local economies should suffer more than others. Places built on construction
+and factories borrow more and build more. A standard method finds that these
+places actually do \emph{better} when rates rise, and finds it with great
+confidence. This paper asks whether that confidence is real.
+
+\textbf{What was found.} It is not. The method measures policy using the
+interest rate the Fed actually set. But the Fed raises rates when the economy is
+already strong, so that measure carries the economy inside it. Swapping in a
+measure of only the surprise part of policy leaves the estimates far too
+uncertain to say anything. The margin of error grows by roughly six to thirteen
+times, depending on the sample.
+Separately, the method fails its own built-in check for whether the comparison
+was fair to begin with.
+
+\textbf{What it means.} The tight margins in this kind of study can come from
+economic ups and downs rather than from policy. Researchers using this design
+should report both measures side by side and compare the margins of error, not
+just the estimates. A large gap between them is a warning.
+
+\textbf{The honest limitation.} This paper shows the original confidence was
+misplaced. It does not recover the true effect. The cleaner estimates are too
+imprecise to say whether employment rises or falls, and one further test of the
+margins of error remains undone.
+
+\end{plainsummary}
+
+
+\section{Introduction}
+
+% --- Establish the territory -------------------------------------------------
+Monetary policy does not land evenly across a country. A rate rise raises the
+cost of borrowing, and places whose employment sits in interest-sensitive
+industries should feel it first. Construction and durable manufacturing are the
+usual examples. \citet{carlino1998} established the regional version of this
+claim, and it has been standard since.
+
+The workhorse tool for testing it is the shift-share, or Bartik, design
+\citep{bartik1991}. A national shock is interacted with a local exposure share
+fixed before the sample begins. Variation in exposure does the identifying work,
+and the fixed share is meant to keep exposure from responding to the shock
+\citep{goldsmithpinkham2020}.
+
+% --- Establish the niche -----------------------------------------------------
+The design has a measurement problem at its centre, and it is not a subtle one.
+Applied work usually measures policy with the realized change in the federal
+funds rate. That change is endogenous. The Federal Reserve tightens when the
+economy runs hot, and the sectors that define exposure are the most cyclical
+ones in the economy.
+
+Everyone writing in this literature knows that. The high-frequency
+identification programme exists because of it \citep{nakamura2018, bauer2023}.
+What is missing is a price. How much does the endogenous measure distort a
+local labor market design, and along which dimension does the distortion show
+up?
+
+The instinctive answer is bias, meaning the coefficient sits in the wrong place.
+This paper finds something different, and more awkward.
+
+% --- Occupy the niche --------------------------------------------------------
+I estimate a shift-share difference-in-differences design on county employment
+from 2002 to 2019, using the predetermined 2002 county share of employment in
+construction and manufacturing as exposure. Every result appears for the full
+window and again excluding 2009 through 2012.
+
+Three findings follow.
+
+First, the naive design looks strong and points the wrong way. The
+contemporaneous interaction is $0.022$ with a $p$-value below $0.001$. Read
+directly, tightening raises employment where exposure is highest.
+
+Second, the design fails its own falsification test. Adding leads of the
+interaction, two of the four reject zero under both clustered and randomization
+inference. Employment in exposed counties was already moving before policy
+changed.
+
+% ⚠️ "every horizon turns negative" is a FULL-WINDOW claim only. See
+% sections/results_discussion.tex 5.6. Do not restore it unqualified.
+Third, and this is the paper's central result, replacing the realized rate
+change with Bauer--Swanson high-frequency surprises does not relocate the
+estimate. It dissolves it. No horizon rejects zero, in either window, and
+standard errors widen by a factor of six to twelve. The two estimators are not
+statistically distinguishable at any horizon.
+
+% --- The mechanism, briefly. Detail is in Results. ---------------------------
+The mechanism is visible in the shock series themselves. Over this sample the
+realized rate change correlates with contemporaneous national employment growth
+at $0.470$. The identified surprise correlates at $-0.119$, and the two measures
+correlate with each other at $-0.010$.
+
+So the naive design draws its precision from business-cycle variation rather
+than policy variation. Cyclical variation is abundant and moves with the
+outcome, which is what produces tight intervals. It is also the variation an
+identification strategy exists to remove. The design was not estimating the
+effect of monetary policy precisely. It was estimating something else precisely.
+
+% --- Contribution, stated narrowly on purpose --------------------------------
+The contribution is diagnostic rather than structural. This paper does not
+propose a new estimator, and it does not recover the true employment response.
+It shows that a widely used design can report a precise and interpretable
+coefficient whose precision is an artifact, and that two cheap checks catch it.
+
+The recommendation follows from that and costs one column. Report the design
+under both shock measures, and read the comparison on the standard errors
+rather than the coefficients. A large gap says the reported precision was
+borrowed.
+
+% --- Honest placement relative to the shift-share inference literature -------
+This is a complement to the shift-share inference literature, not a substitute
+for it. \citet{adao2019} show that conventional standard errors can be severely
+understated when a small number of common sectoral shocks drive exposure. That
+concern is live here and is not tested in this paper. The problem documented
+here is upstream of it: before asking whether the standard errors are computed
+correctly, one may ask what variation they are computed on.
+
+% --- Roadmap ----------------------------------------------------------------
+Section 2 describes the data and both designs. Section 3 reports the results,
+figure by figure. Section 4 discusses what the precision was made of, what the
+two diagnostics do and do not establish, and what remains untested.

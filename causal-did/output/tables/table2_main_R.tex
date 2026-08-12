@@ -1,0 +1,38 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & \multicolumn{2}{c}{ln\_emp} & d\_ln\_emp\\
+   Model:       & (1)            & (2)            & (3)\\  
+   \midrule
+   \emph{Variables}\\
+   inter        & 0.0223$^{***}$ & -0.0088        & 0.0077$^{***}$\\   
+                & (0.0043)       & (0.0055)       & (0.0012)\\   
+   inter\_lag1  &                & -0.0015        &   \\   
+                &                & (0.0018)       &   \\   
+   inter\_lag2  &                & 0.0162$^{***}$ &   \\   
+                &                & (0.0044)       &   \\   
+   inter\_lag3  &                & 0.0215$^{***}$ &   \\   
+                &                & (0.0032)       &   \\   
+   inter\_lag4  &                & 0.0433$^{***}$ &   \\   
+                &                & (0.0034)       &   \\   
+   \midrule
+   \emph{Fixed-effects}\\
+   county\_id   & Yes            & Yes            & Yes\\  
+   qidx         & Yes            & Yes            & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations & 207,672        & 196,124        & 204,785\\  
+   R$^2$        & 0.99339        & 0.99390        & 0.04068\\  
+   Within R$^2$ & 0.00023        & 0.00230        & $4.33\times 10^{-5}$\\   
+   \midrule \midrule
+   \multicolumn{4}{l}{\emph{Clustered (county\_id) standard-errors in parentheses}}\\
+   \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+SE clustered by county. Exposure = CBP 2002 constr+manuf share. Sample: full 2002-2019.
+\par\endgroup
+
+

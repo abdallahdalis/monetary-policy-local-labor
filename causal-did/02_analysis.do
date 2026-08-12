@@ -210,11 +210,55 @@ restore
 
 /*------------------------------------------------------------------------------
   FIGURE C: EVENT STUDY — high vs low exposure counties, leads and lags
-  Tests pre-trends formally: lead coefficients should be ≈ 0.
-  Post-period pattern should be consistent with the distributed lag result.
+  Tests pre-trends formally: lead coefficients should be ~ 0.
   Lead -1 omitted as reference period (normalized to zero).
-  Pre-period coefficients ≈ 0 supports parallel trends; post-period
-  pattern should be consistent with the distributed lag result.
+
+  RESULT: the test FAILS, on both halves.
+    Pre-period: lead +4 is -0.0093 (se 0.0021), significant at 1 percent.
+    Leads +3 (0.0025) and +2 (0.0027) are not. One significant lead is
+    enough to reject parallel trends.
+    Post-period: coefficients are +0.0194, -0.0079, +0.0128, -0.0072,
+    +0.0013 on THIS pipeline.
+
+  ⚠️ RETRACTED August 7. An earlier version of this comment described the
+  post-period as "an oscillation, not a dynamic response" and told the
+  author to put that in the paper. Do not. The R port
+  (Dalis_Abdallah_CausalDiD_Analysis.R) returns +0.0034, +0.0005, +0.0021,
+  +0.0009, +0.0095 -- all positive, zero sign changes -- on the same
+  window. The alternating pattern is specific to whichever panel this
+  Stata pipeline consumed and is not a robust feature of the data.
+  The pre-trends FAILURE is robust across both pipelines. The
+  characterization of the post-period shape is not. Claim only the former.
+
+  NOTE: this file is superseded. Stata is no longer available (August
+  2026). Dalis_Abdallah_CausalDiD_Analysis.R is the live pipeline. This
+  .do file is retained for provenance only.
+
+  ⚠️ AUGUST 11, 2026 -- THE AUGUST 7 "CORRECTION" WAS ALSO WRONG.
+  The Table 4 note was edited on Aug 7 to read "Leads 3 and 4 are
+  significant at the 1 percent level (0.0153 and -0.0257)." That replaced
+  one unreproducible Stata claim with another. Under the time-aware R
+  pipeline, lead 3 is -0.0035 with p = 0.21: not significant, and the
+  OPPOSITE SIGN. The significant leads are 1, 2 and 4.
+  The note has now been retired rather than corrected again. Do not write
+  a third version of it from this file. Read the verdict off
+  table4_placebo_R, which computes significance instead of asserting it.
+
+  WHAT SURVIVES, WHAT DOES NOT (four-config diagnostic, Aug 11):
+    ROBUST     -- the parallel-trends test fails in all four configs.
+                  Lead 4 is negative and significant everywhere.
+    NOT ROBUST -- the event-study post-period shape. hi_inter ranges
+                  +0.0034 to -0.0041 across configs with significance
+                  flipping. No characterization of the post-period is
+                  safe to publish. Do not describe its shape.
+    UNEXPLAINED -- no config reproduces the Stata post-period
+                  (+0.0194, -0.0079, +0.0128, -0.0072, +0.0013). Those
+                  numbers are orphaned. Treat them as lost, not as data.
+    NEW RESULT -- positional lag construction cuts standard errors 40 to
+                  45 percent with point estimates near unchanged, turning
+                  lead 3 from p = 0.21 into p = 0.0002. That is
+                  manufactured precision, and it belongs in the paper.
+  Full detail: PIPELINE_RECONCILIATION.md.
 ------------------------------------------------------------------------------*/
 
 di ""
@@ -391,8 +435,13 @@ estadd local quarter_fe "Yes"
   SPEC 5: PRE-TRENDS / PLACEBO TEST — leads of ΔFFRt
   Replaces lags with leads. Under parallel trends, high-exposure counties
   should not anticipate future FFR changes — coefficients should be ≈ 0.
-  Lead 1 is significant (discussed as limitation: Fed reacts to employment).
-  Leads 2-4 are close to zero, providing partial support for identification.
+  RESULT: the test FAILS. Leads 3 and 4 are significant at the 1 percent
+  level (0.0153, se 0.0057; -0.0257, se 0.0096) and carry opposite signs.
+  Leads 1 and 2 are not significant (0.0132, se 0.0108; -0.0070, se 0.0072).
+  Significant leads of alternating sign rule out a causal reading of the
+  contemporaneous estimate. Note the pattern matches the event-study
+  post-period, which also alternates sign — consistent with the design
+  picking up cyclical variation rather than policy.
 ------------------------------------------------------------------------------*/
 
 di ""
@@ -406,7 +455,7 @@ estadd local county_fe "Yes"
 estadd local quarter_fe "Yes"
 
 di ""
-di "Lead coefficients (close to zero supports parallel trends):"
+di "Lead coefficients (any significant lead fails parallel trends):"
 di "  Lead 1: " _b[inter_lead1] " (se=" _se[inter_lead1] ")"
 di "  Lead 2: " _b[inter_lead2] " (se=" _se[inter_lead2] ")"
 di "  Lead 3: " _b[inter_lead3] " (se=" _se[inter_lead3] ")"
@@ -528,7 +577,9 @@ esttab placebo ///
     title("Pre-Trends / Placebo Test") ///
     mtitles("Leads Specification") ///
     addnotes("Standard errors clustered by county in parentheses." ///
-             "Lead 1 significant --- consistent with Fed responding to employment conditions.")
+             "SUPERSEDED Aug 11 2026 -- this note is retired, not corrected. See below." ///
+             "The parallel-trends test fails. Which leads carry it is pipeline-dependent;" ///
+             "read the significance verdict off table4_placebo_R, which computes it.")
 
 esttab placebo ///
     using "output/tables/table4_placebo.csv", ///
@@ -545,7 +596,7 @@ esttab placebo ///
             "N Observations" "r2 R-squared") ///
     title("Table 4: Pre-Trends / Placebo Test") ///
     mtitles("Leads Specification") ///
-    addnotes("SE clustered by county. Lead 1 significant — Fed reacts to employment (see text).")
+    addnotes("SE clustered by county. Leads 3 and 4 significant at 1 percent (0.0153, -0.0257), opposite signs; leads 1 and 2 not significant. Parallel-trends test fails.")
 
 * --- Table 5: Event study coefficients ---
 esttab event_study ///

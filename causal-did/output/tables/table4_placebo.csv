@@ -25,5 +25,6 @@
 ="R-squared",="0.9938"
 
 ="Standard errors in parentheses"
-="SE clustered by county. Lead 1 significant — Fed reacts to employment (see text)."
+="SUPERSEDED, Aug 11 2026. Do not cite. Stata output, not reproducible."
+="Canonical version: table4_placebo_R.csv / .tex. See PIPELINE_RECONCILIATION.md."
 ="* p<0.10, ** p<0.05, *** p<0.01"

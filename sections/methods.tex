@@ -1,0 +1,200 @@
+% =============================================================================
+%  Spurious Precision: Why Shift-Share Designs Overstate Monetary Policy
+%                      Effects on Local Employment
+%  Methods — draft of August 11, 2026
+%  Author: Abdallah Dalis
+%
+%  Written after Results and Discussion, per step 5 of
+%  00_Resources/research-paper-writing-process.md.
+%
+%  Standard for this section: enough detail to reproduce. Every construction
+%  below is traced to the line of code that performs it. Where a quantity is
+%  not recorded anywhere I could source, it is marked TODO rather than guessed.
+% =============================================================================
+
+\section{Data and Methods}
+
+\subsection{Data}
+
+% SOURCE: monetary_policy_labor.R lines 55-86; causal-did scripts section 1.0.
+Four sources are used, all public.
+
+County employment comes from the Quarterly Census of Employment and Wages,
+assembled as a county-by-quarter panel covering 2002 through 2019. The outcome
+is the log of county employment. Observations with non-positive employment are
+dropped.
+
+Exposure comes from County Business Patterns. It is the share of county
+employment in construction and manufacturing in 2002, the first year of the
+panel. The share is fixed at its 2002 value for every quarter, so it cannot
+respond to later policy.
+
+% RESOLVED August 11, 2026, by Dalis_Abdallah_ExposureDescriptives.R. All three
+% counts floating around the project record are correct; they are different
+% objects, which is why none of them could be reconciled by argument:
+%   3,228 = raw QCEW panel
+%   2,889 = CBP 2002 exposure file
+%   2,887 = joined estimation sample (2 counties in CBP have no QCEW match)
+% Row attrition: 207,672 joined county-quarters, 196,148 estimated. The 11,524
+% difference is the four leads times 2,887 counties, which is 11,548. Close
+% enough to be the lead construction and nothing else.
+The Quarterly Census of Employment and Wages panel covers 3{,}228 counties. The
+County Business Patterns exposure file covers 2{,}889. Joining them leaves
+\textbf{2{,}887 counties} over 72 quarters, and that is the estimation sample
+in both windows.
+
+Attrition beyond that is mechanical. The joined panel has 207{,}672
+county-quarter observations in the full window and 161{,}528 excluding 2009
+through 2012. The estimated specifications use 196{,}148 and 150{,}004
+respectively, the difference being rows whose four leads are not observed.
+Counts reported in the paper are estimation samples unless stated otherwise.
+
+Macroeconomic series come from FRED: the effective federal funds rate, total
+nonfarm payrolls, and the consumer price index. The funds rate is averaged
+within quarter and first-differenced.
+
+% SOURCE: monetary_policy_labor.R lines 63-71. Sheet name matters.
+The identified policy shock is the orthogonalized Bauer--Swanson monetary policy
+surprise, taken from the Federal Reserve Bank of San Francisco's published
+workbook, sheet ``Monthly (update 2023)''. Monthly surprises are summed within
+quarter. The series is constructed to be orthogonal to macroeconomic and
+financial information available before each meeting.
+
+\subsection{The shift-share difference-in-differences design}
+
+% SOURCE: causal-did/Dalis_Abdallah_CausalDiD_Analysis.R line 256.
+The main specification is
+%
+\begin{equation}
+\ln E_{ct} \;=\; \beta \,\bigl(\Delta f_t \times s_c\bigr) \;+\; \alpha_c \;+\; \tau_t \;+\; \varepsilon_{ct},
+\label{eq:did}
+\end{equation}
+%
+where $\ln E_{ct}$ is log employment in county $c$ in quarter $t$, $\Delta f_t$
+is the quarterly change in the federal funds rate, and $s_c$ is the 2002
+exposure share. County fixed effects $\alpha_c$ absorb permanent differences in
+level, and quarter fixed effects $\tau_t$ absorb every national shock, including
+$\Delta f_t$ itself.
+
+% NOTE: this is why dffr does not appear as its own regressor. Worth stating
+% because a reader will look for it.
+The funds rate change therefore does not enter separately. It is collinear with
+the quarter fixed effects and is absorbed by them. Only the interaction is
+identified, and $\beta$ is a difference in differences: the extra employment
+response of a more exposed county relative to a less exposed one.
+
+Standard errors are clustered by county throughout.
+
+Four further specifications are reported. A distributed-lag version adds four
+quarterly lags of the interaction. A growth version replaces the outcome with
+the quarterly change in log employment. A pre-trends version adds four leads,
+and is described below. An event-study version replaces continuous exposure
+with an indicator for above-median exposure.
+
+% ⚠️ DECIDED August 11, 2026. Do not silently switch these.
+% The event-study parameterization is NOT used for the pre-trends claim. See
+% FIGURE_PLAN_2026-08-11.md, "Figure 3: parameterization settled".
+The pre-trends test uses the continuous parameterization, not the event-study
+one. The two disagree about which leads reject, and the continuous version is
+the one on which this paper's randomization inference was computed. Reporting
+one test and inferring from the other would be an error, and the choice is
+stated here so it is not made by accident later.
+
+\subsection{Local projections}
+
+% SOURCE: monetary_policy_labor.R lines 176-203.
+The second design estimates, at each horizon $h=0,\dots,12$,
+%
+\begin{equation}
+100 \times \bigl(\ln E_{c,t+h} - \ln E_{c,t-1}\bigr)
+\;=\; \theta_h \,\bigl(z_t \times \tilde{s}_c\bigr) \;+\; \text{(county and quarter means)} \;+\; u_{ct},
+\label{eq:lp}
+\end{equation}
+%
+where $z_t$ is the policy shock and $\tilde{s}_c$ is exposure standardized to
+mean zero and unit variance. Both the outcome and the interaction are passed
+through a two-way within transformation, removing county and quarter means,
+before estimation without an intercept.
+
+The specification is estimated twice at every horizon. The first pass uses the
+realized funds rate change as $z_t$. The second substitutes the Bauer--Swanson
+surprise. Nothing else changes: same panel, same transformation, same horizons.
+That is the point of the exercise.
+
+% ⚠️ SCALE WARNING. A reader will otherwise try to compare 0.022 against 0.198.
+Two features of this design make its coefficients incomparable to
+equation~\eqref{eq:did}, and both are easy to miss. The outcome is scaled by
+100 and cumulated from $t-1$ to $t+h$, and exposure is standardized rather than
+left in share units. So $\theta_h$ is a percentage response per standard
+deviation of exposure, while $\beta$ is a log-point response per unit of
+exposure share. \textbf{The two coefficients are not on the same scale and
+should never be compared directly.} The comparison this paper makes is between
+two local projections that share a scale, not between the projections and the
+difference in differences.
+
+% SOURCE: monetary_policy_labor.R line 197.
+Standard errors in the local projections are clustered by quarter rather than
+by county. This is the appropriate choice: the shock has no cross-sectional
+variation, so the residual dependence that matters runs across counties within
+a quarter. It also means inference rests on 72 clusters rather than on the
+number of observations. Section~\ref{sec:limits} returns to this.
+
+\subsection{Randomization inference}
+
+% SOURCE: causal-did/Dalis_Abdallah_RandomizationInference.R, seed 20260811.
+The pre-trends result is checked without relying on the clustered variance
+estimator. Exposure is permuted across counties, the model is re-estimated on
+the permuted assignment, and the exercise is repeated 200 times per
+construction. The spread of the placebo estimates is the null distribution, and
+the reported $p$-value is the share of permutations whose estimate exceeds the
+true one in absolute value. The seed is fixed at 20260811.
+
+% ⚠️ Both schemes are reported, and the second must NOT be read as stronger
+% evidence. See PIPELINE_RECONCILIATION.md section 4f.
+Two permutation schemes are run. The first shuffles exposure freely across all
+counties. The second shuffles only within state. The within-state scheme was
+intended to preserve the geographic concentration of industrial structure that
+free permutation destroys. It does not do what was intended: restricting the
+shuffle to same-state counties means exposure can only move to a county with
+similar exposure, which makes the randomization less aggressive and narrows the
+null mechanically. Its $p$-values are therefore anti-conservative and are not
+quoted as evidence. Both are reported so the reader can see why.
+
+\subsection{Sample windows}
+
+% ⚠️ Honest statement of a decision made without a remembered rationale.
+Every result is reported for two samples: the full 2002 to 2019 panel, and the
+same panel excluding 2009 through 2012.
+
+The earlier version of this work excluded those years. The zero lower bound is a
+defensible reason to do so, since the funds rate carries little information
+about the policy stance when it is pinned near zero. It is not the recorded
+reason, because no rationale was recorded at the time.
+
+Rather than reconstruct one, both windows are reported throughout. A
+justification written after seeing the results is worth nothing, and showing
+both leaves no choice to defend. Where the two disagree, the disagreement is
+reported. Where they do not, that is stated as well.
+
+\subsection{Software and reproducibility}
+
+% SOURCE: MEMORY.md, "Stata license lapsed, August 2026. R is the only
+% pipeline." Do NOT describe the .do files as runnable.
+All estimates are produced in R. Fixed-effects models use \texttt{fixest}, with
+\texttt{haven} for Stata-format inputs, \texttt{sandwich} for clustered variance
+estimation in the local projections, and \texttt{readxl} for the Bauer--Swanson
+workbook.
+
+An earlier version of the difference-in-differences pipeline was written in
+Stata. It is retained for provenance only and cannot be executed. Where the two
+pipelines disagreed, the disagreement was traced rather than reconciled by
+choosing the preferred answer, and the R implementation is canonical. The
+resulting reconciliation is documented in full, including the finding that a
+routine choice about how lagged variables are constructed cut standard errors by
+40 to 45 percent without meaningfully moving the point estimates.
+
+% This sentence is the honest version of a limitation, not a boast. Keep it.
+That last observation deserves emphasis, because it is this paper's own thesis
+appearing inside its own code: a defensible-looking construction choice, of a
+kind no published table would ever display, manufactured precision that was not
+there.

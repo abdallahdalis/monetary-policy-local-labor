@@ -36,4 +36,6 @@
 ="Standard errors in parentheses"
 ="SE clustered by county. High = above-median constr+manuf share."
 ="Reference period: t−1 (omitted, normalized to zero)."
+="SUPERSEDED, Aug 11 2026. Do not cite. Post-period not reproducible in R."
+="Canonical version: table5_event_study_R.csv / .tex. See PIPELINE_RECONCILIATION.md."
 ="* p<0.10, ** p<0.05, *** p<0.01"

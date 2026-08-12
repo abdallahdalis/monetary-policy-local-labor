@@ -1,0 +1,81 @@
+% =============================================================================
+%  Spurious Precision: Why Shift-Share Designs Overstate Monetary Policy
+%                      Effects on Local Employment
+%  Conclusion — draft of August 11, 2026
+%  Author: Abdallah Dalis
+%
+%  Step 7 of 00_Resources/research-paper-writing-process.md.
+%  NO NEW RESULTS. Every number below appears earlier in the paper.
+% =============================================================================
+
+\section{Conclusion}
+
+A shift-share difference-in-differences design applied to county employment
+returns a precise, robust and wrong-signed estimate of how monetary policy
+transmits to local labor markets. This paper asked what that precision was made
+of, and answered that it was made of the business cycle.
+
+Two diagnostics support the conclusion, and they fail in different ways.
+
+The design fails its own pre-trends test. Adding leads of the interaction, two
+of four reject zero under both clustered and randomization inference, and the
+verdict holds across sample windows and permutation schemes. Employment in
+exposed counties was already moving before policy changed, so the estimate
+cannot be read causally.
+
+Replacing the realized funds rate change with an identified high-frequency
+surprise does not move the estimate to a different place. It widens the interval
+by a factor of six to twelve in the full window, and six to thirteen excluding
+2009 to 2012, until no horizon rejects zero in either. The two estimators cannot
+be told apart at any horizon. The collapse in precision, and not the change in
+sign, is the finding.
+
+Behind both is a measurement fact. Over this sample the realized rate change
+correlates with contemporaneous national employment growth at $0.470$, while the
+identified surprise correlates at $-0.119$. The endogenous measure carries the
+cycle inside it, and a design built on that measure reports cyclical variation
+as though it were policy variation.
+
+\subsection*{What this implies for practice}
+
+The recommendation is deliberately small, because a recommendation that requires
+a new estimator will not be followed.
+
+Report the design under both shock measures, and compare them on the standard
+errors rather than the coefficients. A large gap is diagnostic. It says the
+reported precision came from variation the identification strategy was meant to
+remove. This costs one column and no new data.
+
+The wider lesson is about how precision is read. A tight confidence interval is
+usually taken as evidence that a design is working. In a shift-share setting it
+can equally be evidence that the design is absorbing the business cycle, and the
+two cases look identical in a published table. They are told apart by changing
+the shock, not by inspecting the interval.
+
+\subsection*{Limitations and next steps}
+
+Three things this paper does not do.
+
+It does not recover the true employment response. The identified estimates are
+too imprecise to establish a sign, and claiming one would repeat the error the
+paper documents.
+
+It does not test exposure-robust inference. \citet{adao2019} show that
+conventional standard errors can be badly understated when a small number of
+common sectoral shocks drive exposure. Two permutation schemes were run and
+neither addresses that concern: free permutation destroys the spatial
+correlation of exposure, and within-state permutation narrows the null
+mechanically. The appropriate instrument is their variance estimator, and
+applying it is the first item of future work.
+
+It does not describe the shape of the event-study path, in either direction.
+The post-period coefficients move across defensible constructions of the lagged
+variables, and the pre-period leads, while stable, are not monotone. The paper
+reports coefficients and rejects zero. It does not narrate a trajectory that the
+estimates would not support.
+
+Beyond those, the natural extension is to ask whether the result generalizes.
+The diagnostic proposed here is not specific to monetary policy or to county
+employment. Any shift-share design whose shock is a realized policy variable
+rather than an identified one is exposed to the same problem, and the same
+one-column check would detect it.
